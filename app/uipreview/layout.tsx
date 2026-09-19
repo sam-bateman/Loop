@@ -9,6 +9,7 @@ const mono = Geist_Mono({ subsets: ["latin"], display: "swap", variable: "--font
 export const metadata: Metadata = {
   title: "Loop",
   description: "Minutes of life expectancy, from your WHOOP data.",
+  robots: { index: false, follow: false },
 };
 
 export default function LoopAppLayout({ children }: { children: React.ReactNode }) {

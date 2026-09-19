@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import Landing from "./landing/Landing";
 
@@ -13,14 +14,11 @@ export default async function Home({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  // No auto-redirect. A signed-in visitor used to be bounced straight to
-  // /dashboard, which meant the landing page was invisible to everyone who had
-  // ever connected WHOOP. The CTA switches instead.
   const session = await getSession();
-  const signedIn = Boolean(session.accessToken);
+  if (session.accessToken) redirect("/dashboard");
 
   const { error } = await searchParams;
   const message = error ? (ERRORS[error] ?? "Something went wrong connecting to WHOOP.") : null;
 
-  return <Landing error={message} signedIn={signedIn} />;
+  return <Landing error={message} />;
 }

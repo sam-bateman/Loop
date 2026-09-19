@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
-  { href: "/dashboard", label: "Today", icon: "pulse" },
-  { href: "/food", label: "Food", icon: "food" },
-  { href: "/ledger", label: "History", icon: "history" },
-  { href: "/genome", label: "Genetics", icon: "genetics" },
+  { href: "/uipreview", label: "Today", icon: "pulse" },
+  { href: "/uipreview/food", label: "Food", icon: "food" },
+  { href: "/uipreview/ledger", label: "History", icon: "history" },
+  { href: "/uipreview/genome", label: "Genetics", icon: "genetics" },
 ];
 
 function TabIcon({ name }: { name: string }) {
@@ -28,7 +28,7 @@ export default function TabBar() {
   return (
     <nav className="tabbar" aria-label="Sections">
       {TABS.map((t) => {
-        const active = t.href === "/dashboard" ? path === "/dashboard" : path.startsWith(t.href);
+        const active = t.href === "/uipreview" ? path === "/uipreview" : path.startsWith(t.href);
         return (
           <Link
             key={t.href}

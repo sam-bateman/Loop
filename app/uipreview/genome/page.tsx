@@ -97,7 +97,7 @@ export default function GeneticsPage() {
               </article>
             ))}
           </div>
-          <a className="food-link" href="/food">See power meals and ingredients <span>→</span></a>
+          <a className="food-link" href="/uipreview/food">See power meals and ingredients <span>→</span></a>
         </section>
 
         {habitInsights.length > 0 && (

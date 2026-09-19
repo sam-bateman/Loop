@@ -42,7 +42,7 @@ export default async function Explain({
   return (
     <AppFrame scroll>
       <div className="screen explain">
-        <Link className="back-link label" href="/ledger">
+        <Link className="back-link label" href="/uipreview/ledger">
           ← Ledger
         </Link>
 

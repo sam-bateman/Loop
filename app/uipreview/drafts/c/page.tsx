@@ -168,7 +168,7 @@ export default function DraftC() {
           <a className="cta" href="/api/auth/login">
             Connect WHOOP
           </a>
-          <Link className="cta-ghost" href="/genome">
+          <Link className="cta-ghost" href="/uipreview/genome">
             Add your genome — optional, and always second
           </Link>
           <p className="micro" style={{ textTransform: "none", lineHeight: 1.7 }}>
