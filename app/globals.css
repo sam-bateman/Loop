@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0a0a0b;
+  --surface: #131315;
+  --surface-2: #1b1b1e;
+  --line: #2a2a2e;
+  --text: #f2f1ed;
+  --muted: #8b8b84;
+  --faint: #5c5c57;
+  --gain: #86d9a6;
+  --loss: #ef8f7c;
+  --accent: #e8c15a;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-gain: var(--gain);
+  --color-loss: var(--loss);
+  --color-accent: var(--accent);
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, -apple-system, "SF Pro Text", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+.num {
+  font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.prose-loop { color: var(--muted); font-size: 15px; line-height: 1.7; }
+.prose-loop h1 { color: var(--text); font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 20px; }
+.prose-loop h2 { color: var(--text); font-size: 18px; font-weight: 600; margin: 40px 0 12px; letter-spacing: -0.01em; }
+.prose-loop h3 { color: var(--text); font-size: 15px; font-weight: 600; margin: 28px 0 8px; }
+.prose-loop p { margin: 0 0 14px; }
+.prose-loop ul, .prose-loop ol { margin: 0 0 14px; padding-left: 20px; }
+.prose-loop li { margin: 0 0 6px; }
+.prose-loop a { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+.prose-loop code { font-family: ui-monospace, Menlo, monospace; font-size: 0.87em; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--text); }
+.prose-loop strong { color: var(--text); font-weight: 600; }
+.prose-loop hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+.prose-loop blockquote { border-left: 2px solid var(--line); padding-left: 14px; margin: 0 0 14px; }
+.prose-loop table { width: 100%; border-collapse: collapse; margin: 0 0 18px; font-size: 13.5px; display: block; overflow-x: auto; }
+.prose-loop th { text-align: left; color: var(--text); font-weight: 600; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.prose-loop td { padding: 8px 12px 8px 0; border-bottom: 1px solid color-mix(in srgb, var(--line) 50%, transparent); vertical-align: top; }
