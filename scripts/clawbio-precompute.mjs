@@ -47,11 +47,11 @@ for (const block of nutrigxMd.split(/^### /m).slice(1)) {
 }
 
 // --- pharmgx: drug dosing from CPIC guidelines ---
-// NOTE: run against ClawBio's pre-extracted PGx subset (--demo), not the raw 23andMe
-// file. Parsing the full Corpasome leaves all 13 genes with unmapped diplotypes and
-// every drug "insufficient data" — a ClawBio bug worth reporting upstream. The --demo
-// subset is the same person's genotype, so the result is still Corpas's.
-run(["clawbio.py", "run", "pharmgx", "--demo", "--output", `${TMP}/pharmgx`]);
+// Runs against the full 23andMe file. This previously had to use ClawBio's
+// pre-extracted subset (--demo): the build detector did not recognise NCBI36, so a
+// pre-2011 chip was treated as corrupt and every gene call discarded. Fixed in
+// Owen-x-tech/ClawBio fix/ncbi36-build-detection; requires a checkout carrying it.
+run(["clawbio.py", "run", "pharmgx", "--input", GENOME, "--output", `${TMP}/pharmgx`]);
 const pharmgx = JSON.parse(readFileSync(`${TMP}/pharmgx/result.json`, "utf8"));
 
 // --- PRS: one call per panel. Panels below the SNP-overlap threshold produce no

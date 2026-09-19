@@ -55,7 +55,16 @@ cancer (77), prostate cancer (147), BMI (97). Can also pull any PGS Catalog scor
 
 Corpasome on CAD: 24/46 variants matched, raw PRS 1.98, **0.1 percentile (Low)**.
 
-### `pharmgx` — ✅ works (drug dosing; not a longevity signal)
+### `pharmgx` — ✅ works (after fixing a ClawBio bug)
+
+Full CPIC drug guidance: 1 avoid (warfarin), 25 use-with-caution, 28 standard dosing
+across 13 genes and 59 drugs.
+
+This originally returned "insufficient data" for every drug. ClawBio's build detector
+knew only GRCh37 and GRCh38, and the Corpasome is a 23andMe v2-era file on NCBI36/hg18,
+so it was treated as corrupt and every gene call discarded. Fixed and submitted upstream
+— see `METHODOLOGY-WHOOP.md` §9.4. **A ClawBio checkout carrying that fix is required**
+for `npm run genome:precompute` to reproduce this bundle.
 
 ### Not usable from 23andMe data
 

@@ -292,13 +292,28 @@ Two limitations are surfaced in the interface rather than buried:
   European-ancestry cohorts and lose much of their accuracy elsewhere. Every score shows
   its reference population.
 
-### 9.4 A ClawBio bug worth reporting upstream
+### 9.4 A ClawBio bug found and fixed
 
-Running `pharmgx` against the raw 576k-SNP 23andMe file finds 23 of 32 pharmacogenomic
-SNPs but leaves **all 13 genes with unmapped diplotypes**, so every drug returns
-"insufficient data". The same genotype via ClawBio's pre-extracted subset (`--demo`)
-maps cleanly and returns 1 avoid / 24 caution / 17 standard. The demo bundle uses the
-latter. The raw-file path needs fixing before real user uploads can work.
+`pharmgx` against the raw 576k-SNP Corpasome originally found 23 of 32 pharmacogenomic
+SNPs but left **all 13 genes with unmapped diplotypes**, returning "insufficient data"
+for every drug.
+
+The genotypes were never the problem — calling ClawBio's diplotype function directly on
+that file returns CYP2C9 \*1/\*2 and VKORC1 TT, the warfarin combination. The data was
+discarded at the last step. `detect_reference_genome` knew only GRCh37 and GRCh38, and
+the Corpasome is a 23andMe v2-era export annotated against **NCBI36/hg18** (ClawBio's own
+`genome_compare.py` already labels it "build 36"). Coordinates matching no known build
+were treated as corruption, and a guard overwrote every gene call with Indeterminate.
+
+Fixed by adding NCBI36 to the build table, with five regression tests, four of which fail
+without the change. The guard itself is left intact: a file matching no known build is
+still withheld, because conflating an old build with a corrupt one was the bug, not the
+guard. Submitted upstream from `Owen-x-tech/ClawBio`, branch
+`fix/ncbi36-build-detection`.
+
+The full file now yields 1 avoid / 25 caution / 28 standard, against 1 / 24 / 17 from the
+pre-extracted subset. Three genes stay Indeterminate — DPYD, UGT1A1 and CYP3A5 — which is
+correct: those depend on repeat and indel variants a SNP array cannot call.
 
 ### 9.5 References
 
