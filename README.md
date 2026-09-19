@@ -5,6 +5,24 @@ from Spiegelhalter (2012) and published mortality meta-analyses.
 
 **Live:** https://loop-longevity.vercel.app
 
+## ⚠️ The design is temporary
+
+Everything visual in this repo — the landing page, the dashboard layout, the colour
+palette, the typography, the name "Loop" — is **scaffolding built in a 3-hour hackathon
+and is meant to be thrown away.** Do not treat any of it as settled. Rethink it freely.
+
+What is **not** temporary, and what this repo actually exists to protect:
+
+1. **The WHOOP OAuth flow** — `lib/whoop.ts`, `lib/session.ts`, and the three routes
+   under `app/api/auth/`. Authorization-code exchange, token refresh, state validation,
+   and the registered redirect URLs. This is the load-bearing part.
+2. **The methodology** — [`METHODOLOGY-WHOOP.md`](METHODOLOGY-WHOOP.md) and its
+   implementation in `lib/scoring.ts`. The rates, the citations, the double-counting
+   guards, and the stated limitations.
+
+Redesign the surface as much as you like. Change those two things only with the same
+rigor that produced them.
+
 ## How it works
 
 WHOOP measures sleep duration and regularity, resting heart rate, HRV and training

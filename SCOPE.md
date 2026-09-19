@@ -184,6 +184,12 @@ keeps the unit coherent and sidesteps the stock/flow problem.
 
 ## 5a. Shipped
 
+> **The UI is disposable.** The landing page, dashboard, palette, type and the name
+> "Loop" are hackathon scaffolding — rethink all of it. The WHOOP OAuth flow
+> (`lib/whoop.ts`, `lib/session.ts`, `app/api/auth/*`) and the methodology
+> (`METHODOLOGY-WHOOP.md` + `lib/scoring.ts`) are the load-bearing parts.
+
+
 - `METHODOLOGY-WHOOP.md` — 7 scored factors, 12 citations, explicit limitations
 - `lib/scoring.ts` — the engine, with §4 double-counting guards
 - `lib/whoop.ts` — OAuth + v2 client with token refresh
