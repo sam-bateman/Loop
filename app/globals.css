@@ -1,7 +1,18 @@
 @import "tailwindcss";
 
+/* Ditto's live landing pairs Spencer for the tall retro display face with a
+   plain Arial/Helvetica UI stack. */
+@font-face {
+  font-family: "Spencer";
+  src: url("https://ditto.ai/_next/static/media/spencer_regular_webfont-s.p.061l2g_bhcgpa.woff") format("woff");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
-  --font-sans: ui-sans-serif, -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --font-display: "Spencer", "Times New Roman", serif;
+  --font-sans: Arial, "Helvetica Neue", Helvetica, "Liberation Sans", sans-serif;
   --font-numeric: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
   --bg: #0a0a0b;
   --surface: #131315;
@@ -35,10 +46,12 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: ui-sans-serif, -apple-system, "SF Pro Text", system-ui, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
 }
+
+.font-display { font-family: var(--font-display); font-weight: 400; }
 
 .num {
   font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;

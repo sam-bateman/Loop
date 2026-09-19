@@ -5,34 +5,52 @@ import { accessToken, fetchAll } from "@/lib/whoop";
 import { getSession } from "@/lib/session";
 import { scoreDays, summarize, type DayScore, type Factor } from "@/lib/scoring";
 import { loadDemoGenome } from "@/lib/genomics";
-import { FoodEntry } from "./FoodEntry";
+import styles from "@/app/food/dashboard.module.css";
 
 export const dynamic = "force-dynamic";
 
-function signClass(n: number) {
-  return n > 0 ? "text-gain" : n < 0 ? "text-loss" : "text-faint";
-}
-function signed(n: number) {
-  return `${n > 0 ? "+" : n < 0 ? "−" : ""}${Math.abs(n)}`;
+function signed(n: number, digits = 0) {
+  return `${n > 0 ? "+" : n < 0 ? "−" : ""}${Math.abs(n).toFixed(digits)}`;
 }
 
-function Strip({ days }: { days: DayScore[] }) {
-  const shown = [...days].reverse().slice(-21);
-  const max = Math.max(...shown.map((d) => Math.abs(d.minutes)), 30);
+function tone(n: number) {
+  return n > 0 ? styles.positive : n < 0 ? styles.negative : styles.neutral;
+}
+
+function Icon({ name }: { name: "home" | "food" | "genetics" | "science" }) {
+  const paths = {
+    home: <><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></>,
+    food: <><path d="M7 3v7M4 3v4c0 2 1.3 3 3 3s3-1 3-3V3M7 10v11M16 3c-2 2-3 5-3 8h4v10M17 3v8"/></>,
+    genetics: <><path d="M7 3c0 6 10 12 10 18M17 3C17 9 7 15 7 21M8.5 6h7M7.5 10h9M7.5 14h9M8.5 18h7"/></>,
+    science: <><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7.5 16h9"/></>,
+  };
+  return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
+}
+
+function Ring({ label, value, sub, progress, color }: { label: string; value: string; sub?: string; progress: number; color: "green" | "blue" | "orange" }) {
+  const p = Math.max(2, Math.min(100, progress));
   return (
-    <div className="flex items-center gap-[3px] h-24">
-      {shown.map((d) => {
-        const h = (Math.abs(d.minutes) / max) * 44;
-        const up = d.minutes >= 0;
+    <div className={styles.ringMetric}>
+      <div className={`${styles.ring} ${styles[color]}`} style={{ "--progress": `${p * 3.6}deg` } as React.CSSProperties}>
+        <div className={styles.ringInner}><strong>{value}</strong>{sub && <span>{sub}</span>}</div>
+      </div>
+      <span className={styles.ringLabel}>{label}</span>
+    </div>
+  );
+}
+
+function Trend({ days }: { days: DayScore[] }) {
+  const shown = [...days].reverse().slice(-21);
+  const max = Math.max(...shown.map((day) => Math.abs(day.minutes)), 30);
+  return (
+    <div className={styles.trend} aria-label="Daily life expectancy score for the last 21 days">
+      {shown.map((day) => {
+        const height = Math.max(4, (Math.abs(day.minutes) / max) * 52);
         return (
-          <div key={d.date} className="flex-1 flex flex-col justify-center h-full" title={`${d.date}: ${signed(d.minutes)} min`}>
-            <div className="h-[44px] flex items-end justify-center">
-              {up && <div className="w-full rounded-t-[2px] bg-gain/80" style={{ height: `${Math.max(h, 2)}px` }} />}
-            </div>
-            <div className="h-px bg-line" />
-            <div className="h-[44px] flex items-start justify-center">
-              {!up && <div className="w-full rounded-b-[2px] bg-loss/80" style={{ height: `${Math.max(h, 2)}px` }} />}
-            </div>
+          <div className={styles.trendDay} key={day.date} title={`${day.date}: ${signed(day.minutes)} minutes`}>
+            <div>{day.minutes >= 0 && <span className={styles.trendGain} style={{ height }} />}</div>
+            <i />
+            <div>{day.minutes < 0 && <span className={styles.trendLoss} style={{ height }} />}</div>
           </div>
         );
       })}
@@ -40,28 +58,14 @@ function Strip({ days }: { days: DayScore[] }) {
   );
 }
 
-function FactorRow({ f }: { f: Factor }) {
+function FactorRow({ factor }: { factor: Factor }) {
   return (
-    <div className="flex gap-4 py-3.5 border-b border-line/60 last:border-0">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-[14.5px] font-medium">{f.label}</span>
-          {f.weak && (
-            <span className="text-[10px] uppercase tracking-wider text-faint border border-line rounded px-1.5 py-px">
-              weak evidence
-            </span>
-          )}
-          {f.guarded && (
-            <span className="text-[10px] uppercase tracking-wider text-faint border border-line rounded px-1.5 py-px">
-              halved
-            </span>
-          )}
-        </div>
-        <div className="text-[13px] text-faint mt-1 leading-snug">{f.detail}</div>
+    <div className={styles.factorRow}>
+      <div>
+        <div className={styles.factorTitle}>{factor.label}{factor.guarded && <span>adjusted</span>}{factor.weak && <span>weak evidence</span>}</div>
+        <p>{factor.detail}</p>
       </div>
-      <div className={`num text-[15px] font-medium shrink-0 tabular-nums ${signClass(f.minutes)}`}>
-        {signed(f.minutes)}
-      </div>
+      <strong className={tone(factor.minutes)}>{signed(factor.minutes)}</strong>
     </div>
   );
 }
@@ -72,204 +76,84 @@ export default async function Dashboard() {
 
   const data = await fetchAll(token, 30);
   if (!data.cycles.length) {
-    return (
-      <main className="min-h-dvh px-6 py-10 max-w-lg mx-auto">
-        <h1 className="text-xl font-semibold mb-3">No WHOOP data yet</h1>
-        <p className="text-muted text-[15px] mb-6">
-          Loop connected successfully, but WHOOP returned no cycles for the last 30 days.
-        </p>
-        <a href="/api/auth/logout" className="text-accent text-[14px]">Disconnect</a>
-      </main>
-    );
+    return <main className={styles.empty}><Image src="/brand/loop-wordmark.png" alt="Loop" width={1446} height={742} priority /><h1>No WHOOP data yet</h1><p>Loop connected successfully, but WHOOP returned no cycles for the last 30 days.</p><a href="/api/auth/logout">Disconnect</a></main>;
   }
 
   const session = await getSession();
   const days = scoreDays(data, { age: session.age });
-  const s = summarize(days);
-  const today = days.find((d) => d.factors.length > 0);
+  const summary = summarize(days);
+  const today = days.find((day) => day.factors.length > 0);
   const name = session.name ?? data.profile?.first_name;
-
+  const firstName = name?.split(" ")[0];
   const bestDay = [...days].sort((a, b) => b.minutes - a.minutes)[0];
   const worstDay = [...days].sort((a, b) => a.minutes - b.minutes)[0];
-
-  // Genomics is a fixed baseline, deliberately kept out of the daily number.
-  // METHODOLOGY-WHOOP.md §9.
-  // Genetics is not scored — it produces guidance, not minutes. See lib/genomics.ts.
+  const leadFactor = today ? [...today.factors].sort((a, b) => Math.abs(b.minutes) - Math.abs(a.minutes))[0] : null;
   const genome = loadDemoGenome();
-  const g2 = genome
-    ? {
-        avoid: genome.drugCounts.avoid,
-        caution: genome.drugCounts.caution,
-        insights: genome.insights.length,
-      }
-    : null;
-
-  // Food is scored on the same scale as the WHOOP factors and shares the day's total.
-  // METHODOLOGY.md is its source of truth; lib/food-scoring.ts disables the exercise
-  // and sleep multipliers because Loop scores those directly (METHODOLOGY-WHOOP.md §4).
-  const todayKey = new Date().toISOString().slice(0, 10);
-  // Meal persistence moved out of the session cookie in 8e74f1c; tolerate an
-  // older cookie that still carries a meals list.
-  type StoredMeal = { day: string; minutes: number };
-  const storedMeals = (session as { meals?: StoredMeal[] }).meals ?? [];
-  const todaysMeals = storedMeals.filter((m) => m.day === todayKey);
-  const foodMinutes = todaysMeals.reduce((a, m) => a + m.minutes, 0);
-  const foodCount = todaysMeals.length;
+  const genetics = genome ? { avoid: genome.drugCounts.avoid, caution: genome.drugCounts.caution, insights: genome.insights.length } : null;
+  const date = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric" }).format(new Date());
 
   return (
-    <main className="min-h-dvh px-6 py-8 max-w-lg mx-auto pb-16">
-      <header className="flex items-center justify-between mb-10">
-        <Image src="/brand/loop-wordmark.png" alt="Loop" width={1446} height={742} priority className="w-[72px] h-auto" />
-        <a href="/api/auth/logout" className="text-[12.5px] text-faint hover:text-muted transition-colors">
-          Disconnect
-        </a>
+    <main className={styles.app}>
+      <header className={styles.header}>
+        <div><p>{date}</p><h1>{firstName ? `Hi, ${firstName}` : "Today"}</h1></div>
+        <div className={styles.avatar} aria-label={name ? `${name}'s profile` : "Your profile"}>{(firstName?.[0] ?? "L").toUpperCase()}</div>
       </header>
 
-      {/* Hero */}
-      <section className="mb-9">
-        <p className="text-[13px] text-muted mb-3">
-          {name ? `${name}, over` : "Over"} your last {s.daysScored} days, your habits are running at
-        </p>
-        <div className="flex items-baseline gap-2.5">
-          <span className={`num text-[56px] leading-none font-semibold tracking-tight ${signClass(s.perDay)}`}>
-            {s.perDay > 0 ? "+" : s.perDay < 0 ? "−" : ""}
-            {Math.abs(s.perDay).toFixed(0)}
-          </span>
-          <span className="text-[15px] text-muted">min / day</span>
+      <div className={styles.syncPill}><span />WHOOP synced · last 30 days ready</div>
+
+      <section className={styles.heroCard}>
+        <div className={styles.lifeHeader}>
+          <div><span>Daily pace</span><div><strong className={tone(summary.perDay)}>{signed(summary.perDay)}</strong><small>min / day</small></div></div>
+          <div className={styles.projection}><span>One-year projection</span><strong className={tone(summary.annualDays)}>{signed(summary.annualDays, 1)} days</strong></div>
         </div>
-        <p className="text-[13.5px] text-faint mt-3 leading-relaxed">
-          Held for a year that is{" "}
-          <span className={signClass(s.annualDays)}>
-            {s.annualDays > 0 ? "+" : "−"}
-            {Math.abs(s.annualDays).toFixed(1)} days
-          </span>{" "}
-          of life expectancy — {Math.abs(s.microlives).toFixed(1)} microlives{" "}
-          {s.microlives >= 0 ? "banked" : "spent"} so far.
-        </p>
-      </section>
-
-      <FoodEntry />
-
-      {foodMinutes !== 0 && (
-        <section className="mb-9">
-          <h2 className="text-[12px] uppercase tracking-[0.15em] text-faint mb-2">
-            Food logged today
-          </h2>
-          <div className="rounded-xl border border-line bg-surface px-4 py-3 flex items-baseline justify-between">
-            <span className="text-[13px] text-muted">
-              {foodCount} item{foodCount === 1 ? "" : "s"}
-            </span>
-            <span className={`num text-[19px] font-semibold ${signClass(foodMinutes)}`}>
-              {signed(foodMinutes)} <span className="text-[12px] text-muted font-normal">min</span>
-            </span>
-          </div>
-        </section>
-      )}
-
-      {/* Strip */}
-      <section className="mb-9">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-[12px] uppercase tracking-[0.15em] text-faint">Last 21 days</h2>
-          <span className="text-[11.5px] text-faint num">
-            best {signed(bestDay.minutes)} · worst {signed(worstDay.minutes)}
-          </span>
+        <div className={styles.ringGrid}>
+          <Ring label="Recovery" value={today?.recovery == null ? "—" : `${Math.round(today.recovery)}%`} progress={today?.recovery ?? 0} color="green" />
+          <Ring label="Sleep" value={today?.sleepHours == null ? "—" : today.sleepHours.toFixed(1)} sub={today?.sleepHours == null ? undefined : "hours"} progress={today?.sleepHours == null ? 0 : (today.sleepHours / 8) * 100} color="blue" />
+          <Ring label="Strain" value={today?.strain == null ? "—" : today.strain.toFixed(1)} sub="of 21" progress={today?.strain == null ? 0 : (today.strain / 21) * 100} color="orange" />
         </div>
-        <Strip days={days} />
+        {leadFactor && <div className={styles.insight}><div>✦</div><p><strong>{leadFactor.minutes >= 0 ? "Your strongest tailwind" : "Your biggest opportunity"}</strong><span><b>{leadFactor.label}</b> is contributing <em className={tone(leadFactor.minutes)}>{signed(leadFactor.minutes)} minutes</em>. {leadFactor.detail}</span></p></div>}
       </section>
 
-      {/* Today's breakdown */}
-      {today && (
-        <section className="mb-9">
-          <div className="flex items-baseline justify-between mb-1">
-            <h2 className="text-[12px] uppercase tracking-[0.15em] text-faint">
-              Most recent day
-            </h2>
-            <span className="text-[11.5px] text-faint num">{today.date}</span>
-          </div>
-          <div className="flex items-baseline gap-2 mb-2">
-            <span className={`num text-[30px] font-semibold ${signClass(today.minutes)}`}>
-              {signed(today.minutes)}
-            </span>
-            <span className="text-[13px] text-muted">min</span>
-          </div>
-
-          <div className="rounded-xl border border-line bg-surface px-4">
-            {today.factors.map((f) => (
-              <FactorRow key={f.label} f={f} />
-            ))}
-          </div>
-
-          {today.notes.length > 0 && (
-            <ul className="mt-3 space-y-1.5">
-              {today.notes.map((n) => (
-                <li key={n} className="text-[12.5px] text-faint leading-snug pl-3 border-l border-line">
-                  {n}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
-
-      {/* Raw signals */}
-      {today && (
-        <section className="mb-9">
-          <h2 className="text-[12px] uppercase tracking-[0.15em] text-faint mb-3">Signals</h2>
-          <div className="grid grid-cols-2 gap-2.5">
-            {[
-              ["Sleep", today.sleepHours != null ? `${today.sleepHours.toFixed(1)}h` : "—"],
-              ["Resting HR", today.rhr != null ? `${Math.round(today.rhr)} bpm` : "—"],
-              ["HRV", today.hrv != null ? `${Math.round(today.hrv)} ms` : "—"],
-              ["Day strain", today.strain != null ? today.strain.toFixed(1) : "—"],
-            ].map(([label, value]) => (
-              <div key={label} className="rounded-xl border border-line bg-surface px-4 py-3">
-                <div className="text-[11.5px] text-faint uppercase tracking-wider mb-1">{label}</div>
-                <div className="num text-[19px] font-medium">{value}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {g2 && (
-        <section className="mb-9">
-          <Link
-            href="/genetics"
-            className="block rounded-xl border border-line bg-surface px-4 py-3.5 active:scale-[0.99] transition-transform"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-[14px] font-medium mb-0.5">Your genome</div>
-                <div className="text-[12.5px] text-faint leading-snug">
-                  {g2.avoid > 0 && (
-                    <span className="text-loss">{g2.avoid} drug to avoid · </span>
-                  )}
-                  {g2.caution} need dose care · {g2.insights} insights
-                </div>
-              </div>
-              <span className="text-faint text-[18px] shrink-0">→</span>
-            </div>
-          </Link>
-        </section>
-      )}
-
-      {/* Honesty box */}
-      <section className="rounded-xl border border-line bg-surface-2 px-4 py-4 mb-8">
-        <h3 className="text-[13px] font-semibold mb-2">What this number is, and isn&apos;t</h3>
-        <p className="text-[12.5px] text-faint leading-relaxed">
-          These are population-level estimates from observational cohort studies, applied to one
-          person. None of the underlying associations are established as causal, the factors are
-          summed even though the source cohorts overlap, and one modifier (strain vs. recovery) has
-          no mortality evidence behind it at all. Loop states its rates conservatively for exactly
-          this reason. It is not medical advice.
-        </p>
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}><div><span>Last 21 days</span><h2>Your trajectory</h2></div><p>Best <b className={styles.positive}>{signed(bestDay.minutes)}</b> · Low <b className={styles.negative}>{signed(worstDay.minutes)}</b></p></div>
+        <div className={styles.card}><Trend days={days} /></div>
       </section>
 
-      <footer className="flex items-center justify-between text-[12.5px] text-faint">
-        <Link href="/methodology" className="hover:text-muted transition-colors">
-          Every rate, with citations →
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}><div><span>Nutrition</span><h2>Simple food logging</h2></div></div>
+        <Link href="/food" className={styles.geneticsCard}>
+          <div className={styles.geneticsIcon}><Icon name="food" /></div>
+          <div><span>Food first</span><h2>Power meals & ingredients</h2><p>Pick an easy meal, scan a barcode, or describe what you ate.</p></div><b>→</b>
         </Link>
-      </footer>
+      </section>
+
+      {today && <section className={styles.section}>
+        <div className={styles.sectionHeader}><div><span>Most recent score</span><h2>What moved your number</h2></div><strong className={`${styles.dayTotal} ${tone(today.minutes)}`}>{signed(today.minutes)}<small>min</small></strong></div>
+        <div className={`${styles.card} ${styles.factorList}`}>{today.factors.map((factor) => <FactorRow key={factor.label} factor={factor} />)}</div>
+        {today.notes.length > 0 && <div className={styles.notes}>{today.notes.map((note) => <p key={note}>{note}</p>)}</div>}
+      </section>}
+
+      {today && <section className={styles.section}>
+        <div className={styles.sectionHeader}><div><span>Today</span><h2>Vitals</h2></div></div>
+        <div className={styles.vitalsGrid}>
+          <div><span>Resting HR</span><strong>{today.rhr == null ? "—" : Math.round(today.rhr)}<small>bpm</small></strong></div>
+          <div><span>HRV</span><strong>{today.hrv == null ? "—" : Math.round(today.hrv)}<small>ms</small></strong></div>
+          <div><span>Sleep</span><strong>{today.sleepHours == null ? "—" : today.sleepHours.toFixed(1)}<small>hours</small></strong></div>
+          <div><span>Recovery</span><strong>{today.recovery == null ? "—" : Math.round(today.recovery)}<small>%</small></strong></div>
+        </div>
+      </section>}
+
+      {genetics && <Link href="/genetics" className={styles.geneticsCard}><div className={styles.geneticsIcon}><Icon name="genetics" /></div><div><span>Personal baseline</span><h2>Your genetics</h2><p>{genetics.insights} useful notes · {genetics.caution} need dose care{genetics.avoid > 0 ? ` · ${genetics.avoid} important` : ""}</p></div><b>→</b></Link>}
+
+      <aside className={styles.disclosure}><strong>Built for direction, not diagnosis.</strong><p>Loop applies population-level observational estimates to your data. Associations are not proof of causation.</p><Link href="/methodology">Read the methodology →</Link></aside>
+      <a href="/api/auth/logout" className={styles.disconnect}>Disconnect WHOOP</a>
+
+      <nav className={styles.bottomNav} aria-label="Main navigation">
+        <Link href="/dashboard" className={styles.active}><Icon name="home" /><span>Home</span></Link>
+        <Link href="/food"><Icon name="food" /><span>Food</span></Link>
+        <Link href="/genetics"><Icon name="genetics" /><span>Genetics</span></Link>
+        <Link href="/methodology"><Icon name="science" /><span>Science</span></Link>
+      </nav>
     </main>
   );
 }

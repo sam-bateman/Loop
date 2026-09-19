@@ -1,4 +1,4 @@
-.app { width: 100%; max-width: 540px; min-height: 100dvh; margin: 0 auto; padding: 26px 16px 116px; }
+.app { width: 100%; max-width: 540px; min-height: 100dvh; margin: 0 auto; padding: 26px 16px 116px; font-family: var(--font-sans); }
 .header { display: flex; align-items: center; justify-content: space-between; padding: 4px 4px 0; }
 .header p { margin: 0 0 5px; color: var(--faint); font-size: 12px; }
 .header h1 { margin: 0; font-size: 28px; font-weight: 640; letter-spacing: -.035em; }

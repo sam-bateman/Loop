@@ -54,7 +54,13 @@ const SIGNALS = [
   },
 ] as const;
 
-export default function Landing({ error }: { error?: string | null }) {
+export default function Landing({
+  error,
+  signedIn = false,
+}: {
+  error?: string | null;
+  signedIn?: boolean;
+}) {
   const { ambient, lens } = useMotionBudget();
   const [backdropIn, setBackdropIn] = useState(false);
 
@@ -117,7 +123,7 @@ export default function Landing({ error }: { error?: string | null }) {
               )}
             </div>
 
-            <h1 className="max-w-[16ch] text-[40px] font-semibold leading-[1.05] tracking-[-0.035em] sm:text-[68px]">
+            <h1 className="font-display max-w-[15ch] text-[52px] leading-[0.96] tracking-[-0.012em] sm:text-[84px]">
               Your WHOOP data, priced in{" "}
               <span className="text-accent">minutes of life</span>.
             </h1>
@@ -139,10 +145,10 @@ export default function Landing({ error }: { error?: string | null }) {
 
             <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
               <a
-                href="/api/auth/login"
+                href={signedIn ? "/dashboard" : "/api/auth/login"}
                 className={`${glass.glass} w-full rounded-full bg-white/[0.14] px-8 py-4 text-center text-[15px] font-semibold text-text transition-[background-color,transform] duration-300 hover:bg-white/[0.24] active:scale-[0.98] sm:w-auto`}
               >
-                Sign in with WHOOP
+                {signedIn ? "Open Loop →" : "Sign in with WHOOP"}
               </a>
               <p className="max-w-[34ch] text-[12.5px] leading-relaxed text-faint">
                 Read-only. Your tokens stay in an encrypted cookie on your device — Loop
