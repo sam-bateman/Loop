@@ -44,7 +44,7 @@ const DECISIONS = [
   {
     n: 1,
     title: "The number is not set in Instrument Serif",
-    body: "UI_SPEC.md §5 names Instrument Serif for the hero number and calls it “the single most identity-defining choice in the system”. Drawn next to the actual wordmark it fights it: the logo is monoline, geometric and round-terminalled, and a high-contrast serif beside it reads as two brands sharing a page. These drafts use Quicksand, which shares the wordmark’s construction — uniform stroke, circular bowls, rounded caps — so the display face and the logo have the same skeleton. The cost is warmth: a rounded geometric pushes toward DESIGN_SPEC.md §9’s “too playful → reads as a novelty” failure mode, where the serif pushed toward “too clinical”. Outfit is the same swap without the rounding if this reads too soft. One line in app/uipreview/layout.tsx either way.",
+    body: "UI_SPEC.md §5 names Instrument Serif for the hero number and calls it “the single most identity-defining choice in the system”. Drawn next to the actual wordmark it fights it: the logo is monoline, geometric and round-terminalled, and a high-contrast serif beside it reads as two brands sharing a page. These drafts use Quicksand, which shares the wordmark’s construction — uniform stroke, circular bowls, rounded caps — so the display face and the logo have the same skeleton. The cost is warmth: a rounded geometric pushes toward DESIGN_SPEC.md §9’s “too playful → reads as a novelty” failure mode, where the serif pushed toward “too clinical”. Outfit is the same swap without the rounding if this reads too soft. One line in app/dashboard/layout.tsx either way.",
   },
   {
     n: 2,

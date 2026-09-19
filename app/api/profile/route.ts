@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { accessToken, fetchBasics } from "@/lib/whoop";
 
 const SEXES = ["male", "female", "other"] as const;
 
@@ -25,6 +26,15 @@ export async function POST(req: NextRequest) {
   session.age = clampInt(body.age, 16, 90);
   session.weightLb = clampInt(body.weightLb, 80, 400);
   session.sex = SEXES.includes(body.sex) ? body.sex : undefined;
+
+  // Height never gets its own question, but Mifflin-St Jeor needs it and WHOOP already
+  // knows. Without it every calorie target falls back to a flat 2,000 kcal.
+  if (session.heightCm === undefined) {
+    const token = await accessToken();
+    const measured = token ? (await fetchBasics(token)).body?.height_meter : null;
+    if (measured && measured > 1 && measured < 2.5) session.heightCm = Math.round(measured * 100);
+  }
+
   session.onboarded = true;
   await session.save();
 

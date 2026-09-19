@@ -16,6 +16,7 @@
  */
 
 import { ageMultiplier } from "./scoring";
+import { limitsFor, type BodyProfile } from "./nutrition-targets";
 
 export type Nutrition = {
   food_name: string;
@@ -28,19 +29,27 @@ export type Nutrition = {
   fibre_g: number;
   protein_g?: number;
   carbs_g?: number;
+  /** Total fat, saturated and trans included. Optional — meals logged before it existed lack it. */
+  fat_g?: number;
+  /** Total sugars, naturally occurring included. Tracking only; scoring uses added_sugar_g. */
+  sugar_g?: number;
   is_processed_meat: boolean;
   is_red_meat: boolean;
   fruit_veg_servings: number;
   is_oily_fish: boolean;
   processing_level?: string;
+  /* Product-quality fields, carried over from Liv's Nutrition model. All
+     optional: a barcode record can supply them, a meal photo cannot reliably
+     reveal a packaged food's ingredients, additives or certification. None of
+     them feed the microlife score — they are shown, not scored. */
+  ingredients_text?: string;
+  additive_codes?: string[];
+  is_organic?: boolean;
+  data_source?: string;
 };
 
-export type FoodProfile = {
-  age?: number;
-  sex?: "male" | "female" | "other";
-  weightKg?: number;
-  heightCm?: number;
-};
+/** The scored model and the tracking model read the same profile. */
+export type FoodProfile = BodyProfile;
 
 export type DailyIntake = {
   fruitVegServings: number;
@@ -72,34 +81,12 @@ export function addToIntake(intake: DailyIntake, n: Nutrition): DailyIntake {
 }
 
 // --- Allowances (METHODOLOGY.md §4) ---
+//
+// Sized in lib/nutrition-targets.ts so the numbers Loop *scores* against and the numbers
+// it *shows* you are the same numbers. Read the note at the top of that file before
+// touching the energy estimate: it is what keeps WHOOP strain out of these budgets.
 
-const DEFAULT_CALORIES = 2000;
-
-function estimatedCalories(p?: FoodProfile): number {
-  if (!p?.weightKg || !p?.heightCm || !p?.age) return DEFAULT_CALORIES;
-  // Mifflin-St Jeor
-  const s = p.sex === "male" ? 5 : p.sex === "female" ? -161 : -78;
-  const bmr = 10 * p.weightKg + 6.25 * p.heightCm - 5 * p.age + s;
-  return bmr * 1.4; // light-activity factor; WHOOP strain is scored separately
-}
-
-type Allowances = {
-  saturatedFatG: number;
-  addedSugarG: number;
-  sodiumMg: number;
-  fibreTargetG: number;
-};
-
-function allowancesFor(p?: FoodProfile): Allowances {
-  const calories = estimatedCalories(p);
-  const sugarCeiling = p?.sex === "male" ? 36 : p?.sex === "female" ? 25 : 30;
-  return {
-    saturatedFatG: (calories * 0.06) / 9, // AHA ideal
-    addedSugarG: Math.min((calories * 0.05) / 4, sugarCeiling), // WHO + AHA
-    sodiumMg: 2300, // CDRR. Liv adds sweat losses from exercise; Loop scores exercise separately.
-    fibreTargetG: (calories / 1000) * 14, // IOM adequate intake
-  };
-}
+const allowancesFor = limitsFor;
 
 // --- Budget helpers (METHODOLOGY.md §3) ---
 

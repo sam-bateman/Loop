@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  --font-sans: ui-sans-serif, -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --font-numeric: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
   --bg: #0a0a0b;
   --surface: #131315;
   --surface-2: #1b1b1e;

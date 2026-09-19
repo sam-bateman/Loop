@@ -25,6 +25,8 @@ const SYSTEM_PROMPT = `You analyze food and estimate nutritional content. Given 
   "fibre_g": number,
   "protein_g": number,
   "carbs_g": "number - total carbohydrate, including fibre",
+  "fat_g": "number - total fat, including the saturated and trans fat reported above",
+  "sugar_g": "number - total sugars, including sugars naturally present in fruit, vegetables and dairy. Always >= added_sugar_g",
   "is_processed_meat": boolean,
   "is_red_meat": boolean,
   "fruit_veg_servings": "number - count each discrete fruit or vegetable as 1 serving (1 banana = 1, not 1.5). For mixed dishes, use ~80g per serving. Do not count garnishes or trace ingredients. Cap at 5 servings max.",

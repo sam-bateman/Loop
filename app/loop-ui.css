@@ -30,6 +30,20 @@
   --ash:         #8A9099;
   --dust:        #4A5158;   /* NON-TEXT ONLY — ticks, rules, disabled */
 
+  /* Compatibility aliases for the food components while they share this shell. */
+  --bg: var(--void);
+  --surface: var(--membrane);
+  --surface-2: #151A1F;
+  --line: var(--hairline);
+  --text: var(--bone);
+  --muted: var(--ash);
+  --faint: #687078;
+  --accent: var(--credit);
+  --gain: var(--credit);
+  --loss: var(--debit);
+  --font-sans: var(--font-ui);
+  --font-numeric: var(--font-mono);
+
   /* ─── Emission ──────────────────────────────────────────── */
   --glow-credit: 0 0 24px rgba(56,225,176,.30);
   --glow-debit:  0 0 24px rgba(255,91,73,.26);
@@ -789,19 +803,28 @@
 
 .tabbar {
   flex: none;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 8px 10px max(8px, env(safe-area-inset-bottom));
   border-top: 1px solid var(--hairline);
-  background: var(--void);
+  background: rgba(7,9,11,.92);
+  backdrop-filter: blur(22px) saturate(1.25);
 }
 .tab {
-  flex: 1;
-  padding: var(--s4) var(--s2);
-  text-align: center;
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 3px;
+  padding: 5px 2px;
+  border-radius: 12px;
   text-decoration: none;
   color: var(--ash);
-  transition: color var(--d-fast) var(--ease-soft);
+  transition: color var(--d-fast) var(--ease-soft), background var(--d-fast) var(--ease-soft);
 }
-.tab[data-active] { color: var(--bone); }
+.tab svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.tab span { font-size: 9px; letter-spacing: .02em; text-transform: none; }
+.tab[data-active] { color: var(--credit); background: var(--credit-dim); }
 .tab:hover { color: var(--bone); }
 
 /* ─── Screens ──────────────────────────────────────────────── */

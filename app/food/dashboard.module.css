@@ -1,0 +1,95 @@
+.app { width: 100%; max-width: 540px; min-height: 100dvh; margin: 0 auto; padding: 26px 16px 116px; }
+.header { display: flex; align-items: center; justify-content: space-between; padding: 4px 4px 0; }
+.header p { margin: 0 0 5px; color: var(--faint); font-size: 12px; }
+.header h1 { margin: 0; font-size: 28px; font-weight: 640; letter-spacing: -.035em; }
+.avatar { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid #454849; border-radius: 50%; background: linear-gradient(145deg, #363a3c, #191b1c); box-shadow: 0 10px 30px #0008; font-size: 14px; font-weight: 650; }
+.syncPill { width: fit-content; margin: 20px 4px 14px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border: 1px solid color-mix(in srgb, var(--accent) 15%, var(--line)); border-radius: 999px; background: color-mix(in srgb, var(--accent) 7%, var(--surface)); color: color-mix(in srgb, var(--accent) 72%, white); font-size: 11px; }
+.syncPill span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 75%, transparent); }
+.heroCard, .card, .vitalsGrid > div, .geneticsCard { border: 1px solid var(--line); background: linear-gradient(145deg, #1e2022, #141516); box-shadow: 0 20px 58px #0004; }
+.heroCard { position: relative; overflow: hidden; padding: 22px 18px 18px; border-radius: 25px; }
+.heroCard::before { content: ""; position: absolute; top: -95px; right: -75px; width: 240px; height: 220px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 13%, transparent); filter: blur(52px); pointer-events: none; }
+.lifeHeader { position: relative; z-index: 1; display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding: 0 3px; }
+.lifeHeader span, .sectionHeader > div > span, .geneticsCard > div > span { color: var(--faint); font-size: 10px; font-weight: 650; letter-spacing: .13em; text-transform: uppercase; }
+.lifeHeader > div:first-child > div { margin-top: 8px; display: flex; align-items: flex-end; gap: 8px; }
+.lifeHeader > div:first-child strong { font-family: var(--font-numeric); font-size: 49px; line-height: .9; letter-spacing: -.075em; }
+.lifeHeader small { padding-bottom: 3px; color: var(--muted); font-size: 11px; }
+.projection { display: grid; gap: 5px; text-align: right; }
+.projection span { color: var(--faint); font-size: 10px; }
+.projection strong { font-family: var(--font-numeric); font-size: 14px; }
+.ringGrid { position: relative; z-index: 1; margin: 25px 0 17px; padding: 22px 1px 18px; display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid color-mix(in srgb, var(--line) 85%, transparent); border-radius: 20px; background: #0c0d0e77; }
+.ringMetric { min-width: 0; display: grid; place-items: center; gap: 10px; padding: 0 3px; }
+.ringMetric + .ringMetric { border-left: 1px solid var(--line); }
+.ring { --ring-color: var(--accent); width: min(25vw, 112px); aspect-ratio: 1; padding: 8px; position: relative; border-radius: 50%; background: conic-gradient(from 205deg, var(--ring-color) 0deg var(--progress), #343638 var(--progress) 300deg, transparent 300deg); filter: drop-shadow(0 0 13px color-mix(in srgb, var(--ring-color) 18%, transparent)); }
+.ring::after { content: ""; position: absolute; inset: 4px; border: 1px solid #ffffff12; border-radius: 50%; }
+.ringInner { width: 100%; height: 100%; display: grid; place-content: center; border-radius: 50%; background: radial-gradient(circle at 50% 35%, #2c2f30, #141516 76%); box-shadow: inset 0 1px 7px #ffffff12, 0 6px 18px #0008; text-align: center; }
+.ringInner strong { font-family: var(--font-numeric); font-size: clamp(18px, 5.4vw, 27px); line-height: 1; letter-spacing: -.055em; }
+.ringInner span { margin-top: 4px; color: var(--faint); font-size: 8px; }
+.ringLabel { color: var(--muted); font-size: 11px; font-weight: 620; }
+.green { --ring-color: #8fff00; }
+.blue { --ring-color: #8197ff; }
+.orange { --ring-color: #ffb23d; }
+.insight { position: relative; z-index: 1; padding: 15px; display: grid; grid-template-columns: 31px 1fr; gap: 11px; border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--line)); border-radius: 16px; background: linear-gradient(110deg, color-mix(in srgb, var(--accent) 7%, var(--surface-2)), var(--surface-2)); }
+.insight > div { width: 31px; height: 31px; display: grid; place-items: center; border-radius: 10px; background: color-mix(in srgb, var(--accent) 11%, transparent); color: var(--accent); }
+.insight p { margin: 0; }
+.insight p strong, .insight p span { display: block; }
+.insight p strong { margin-bottom: 4px; font-size: 13px; }
+.insight p span { color: var(--muted); font-size: 11.5px; line-height: 1.55; }
+.insight p b { color: var(--text); font-weight: 580; }
+.insight p em { font-style: normal; font-weight: 620; }
+.section { margin-top: 29px; scroll-margin-top: 20px; }
+.sectionHeader { padding: 0 4px; margin-bottom: 11px; display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; }
+.sectionHeader h2, .geneticsCard h2 { margin: 4px 0 0; font-size: 20px; font-weight: 620; letter-spacing: -.025em; }
+.sectionHeader > p { margin: 0 0 2px; color: var(--faint); font-size: 9px; }
+.sectionHeader > b { margin-bottom: 2px; font-family: var(--font-numeric); font-size: 14px; }
+.card { border-radius: 20px; }
+.trend { height: 140px; padding: 13px 15px; display: flex; align-items: center; gap: 3px; }
+.trendDay { height: 100%; flex: 1; display: grid; grid-template-rows: 1fr 1px 1fr; }
+.trendDay > div { display: flex; justify-content: center; }
+.trendDay > div:first-child { align-items: flex-end; }
+.trendDay > div:last-child { align-items: flex-start; }
+.trendDay > i { width: 100%; height: 1px; background: var(--line); }
+.trendGain, .trendLoss { display: block; width: 100%; max-width: 10px; border-radius: 3px; }
+.trendGain { background: linear-gradient(to top, #219823, var(--gain)); box-shadow: 0 0 8px #40f83022; }
+.trendLoss { background: linear-gradient(to bottom, var(--loss), #a3392d); box-shadow: 0 0 8px #ff6b5220; }
+.dayTotal { display: flex; align-items: baseline; gap: 3px; font-family: var(--font-numeric); font-size: 24px; letter-spacing: -.045em; }
+.dayTotal small { color: var(--faint); font-size: 9px; font-weight: 500; letter-spacing: 0; }
+.factorList { padding: 0 16px; }
+.factorRow { padding: 15px 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 13px; border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent); }
+.factorRow:last-child { border-bottom: 0; }
+.factorTitle { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 13px; font-weight: 580; }
+.factorTitle span { padding: 2px 5px; border: 1px solid var(--line); border-radius: 999px; color: var(--faint); font-size: 8px; font-weight: 600; text-transform: uppercase; }
+.factorRow p { margin: 4px 0 0; color: var(--faint); font-size: 10.5px; line-height: 1.48; }
+.factorRow > strong { padding-top: 1px; font-family: var(--font-numeric); font-size: 14px; }
+.notes { margin-top: 9px; padding: 12px 15px; border-radius: 15px; background: var(--surface); border: 1px solid var(--line); }
+.notes p { margin: 0; color: var(--faint); font-size: 10px; line-height: 1.5; }
+.notes p + p { margin-top: 6px; }
+.vitalsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.vitalsGrid > div { padding: 14px; border-radius: 17px; }
+.vitalsGrid span { display: block; margin-bottom: 11px; color: var(--faint); font-size: 10px; }
+.vitalsGrid strong { font-family: var(--font-numeric); font-size: 22px; letter-spacing: -.045em; }
+.vitalsGrid small { margin-left: 4px; color: var(--faint); font: 500 8px/1 var(--font-sans); letter-spacing: 0; }
+.geneticsCard { margin-top: 29px; padding: 18px; display: grid; grid-template-columns: 41px 1fr auto; align-items: center; gap: 12px; border-radius: 20px; }
+.geneticsIcon { width: 41px; height: 41px; display: grid; place-items: center; border-radius: 13px; color: #9baaff; background: #788cff18; }
+.geneticsIcon svg { width: 21px; }
+.geneticsCard p { margin: 4px 0 0; color: var(--faint); font-size: 10px; line-height: 1.45; }
+.geneticsCard > b { color: var(--faint); }
+.disclosure { margin: 27px 4px 0; }
+.disclosure strong { color: var(--muted); font-size: 11px; }
+.disclosure p { margin: 6px 0 9px; color: var(--faint); font-size: 10px; line-height: 1.55; }
+.disclosure a, .disconnect { color: var(--muted); font-size: 10px; }
+.disconnect { display: inline-block; margin: 22px 4px 0; }
+.bottomNav { position: fixed; z-index: 20; left: 50%; bottom: max(12px, env(safe-area-inset-bottom)); width: calc(100% - 28px); max-width: 508px; height: 67px; padding: 7px 8px; display: grid; grid-template-columns: repeat(4, 1fr); transform: translateX(-50%); border: 1px solid #404345; border-radius: 23px; background: #25272aeb; box-shadow: 0 18px 56px #000c, inset 0 1px #ffffff0d; backdrop-filter: blur(24px) saturate(1.4); }
+.bottomNav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 16px; color: #737679; font-size: 9px; font-weight: 580; }
+.bottomNav svg { width: 19px; height: 19px; }
+.bottomNav .active { background: #ffffff0b; color: var(--text); }
+.bottomNav .active svg { color: var(--accent); }
+.positive { color: var(--gain); }
+.negative { color: var(--loss); }
+.neutral { color: var(--muted); }
+.empty { max-width: 430px; min-height: 100dvh; margin: auto; padding: 48px 24px; display: grid; align-content: center; }
+.empty img { width: 76px; height: auto; margin-bottom: 34px; }
+.empty h1 { margin: 0 0 9px; font-size: 25px; }
+.empty p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+.empty a { margin-top: 14px; color: var(--accent); font-size: 12px; }
+@media (min-width: 680px) { .app { padding-top: 38px; } }
+@media (prefers-reduced-motion: reduce) { .bottomNav, .geneticsCard { scroll-behavior: auto; } }

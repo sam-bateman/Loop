@@ -13,8 +13,10 @@ export type LoopSession = {
   age?: number;
   sex?: "male" | "female" | "other";
   weightLb?: number;
+  /** Filled from WHOOP at onboarding — Mifflin-St Jeor needs it, and no screen asks for it. */
+  heightCm?: number;
   onboarded?: boolean;
-  /** Today's logged meals. Cookie-sized, so lib/../api/meals caps the list. */
+  /** Today's logged meals. Cookie-sized, so app/api/meals caps the list. */
   meals?: {
     day: string;
     at: string;
