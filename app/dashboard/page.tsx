@@ -6,6 +6,7 @@ import { getSession } from "@/lib/session";
 import { scoreDays, summarize, type DayScore, type Factor } from "@/lib/scoring";
 import { loadDemoGenome } from "@/lib/genomics";
 import { GenomicsCard } from "./GenomicsCard";
+import { FoodEntry } from "./FoodEntry";
 
 export const dynamic = "force-dynamic";
 
@@ -96,6 +97,14 @@ export default async function Dashboard() {
   // METHODOLOGY-WHOOP.md §9.
   const genome = loadDemoGenome();
 
+  // Food is scored on the same scale as the WHOOP factors and shares the day's total.
+  // METHODOLOGY.md is its source of truth; lib/food-scoring.ts disables the exercise
+  // and sleep multipliers because Loop scores those directly (METHODOLOGY-WHOOP.md §4).
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const todaysMeals = (session.meals ?? []).filter((m) => m.day === todayKey);
+  const foodMinutes = todaysMeals.reduce((a, m) => a + m.minutes, 0);
+  const foodCount = todaysMeals.length;
+
   return (
     <main className="min-h-dvh px-6 py-8 max-w-lg mx-auto pb-16">
       <header className="flex items-center justify-between mb-10">
@@ -127,6 +136,24 @@ export default async function Dashboard() {
           {s.microlives >= 0 ? "banked" : "spent"} so far.
         </p>
       </section>
+
+      <FoodEntry />
+
+      {foodMinutes !== 0 && (
+        <section className="mb-9">
+          <h2 className="text-[12px] uppercase tracking-[0.15em] text-faint mb-2">
+            Food logged today
+          </h2>
+          <div className="rounded-xl border border-line bg-surface px-4 py-3 flex items-baseline justify-between">
+            <span className="text-[13px] text-muted">
+              {foodCount} item{foodCount === 1 ? "" : "s"}
+            </span>
+            <span className={`num text-[19px] font-semibold ${signClass(foodMinutes)}`}>
+              {signed(foodMinutes)} <span className="text-[12px] text-muted font-normal">min</span>
+            </span>
+          </div>
+        </section>
+      )}
 
       {/* Strip */}
       <section className="mb-9">

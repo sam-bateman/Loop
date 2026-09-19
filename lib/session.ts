@@ -14,6 +14,13 @@ export type LoopSession = {
   sex?: "male" | "female" | "other";
   weightLb?: number;
   onboarded?: boolean;
+  /** Today's logged meals. Cookie-sized, so lib/../api/meals caps the list. */
+  meals?: {
+    day: string;
+    at: string;
+    nutrition: import("./food-scoring").Nutrition;
+    minutes: number;
+  }[];
 };
 
 export const sessionOptions: SessionOptions = {
