@@ -1,0 +1,747 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   Loop landing-page drafts — design tokens.
+
+   Transcribed from UI_SPEC.md §3. Scoped to .loop-ui rather than :root so
+   these drafts can sit alongside the shipped hackathon UI in app/globals.css
+   without either one bleeding into the other. If a draft is promoted to the
+   real landing page, this block moves to :root in globals.css and becomes the
+   single source of truth the spec asks for.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.loop-ui {
+  /* ─── Substrate ─────────────────────────────────────────── */
+  --void:        #07090B;
+  --membrane:    #0E1216;
+  --hairline:    #1C2228;
+  --scrim:       rgba(7,9,11,.72);
+
+  /* ─── Semantic — the only hues that carry meaning ────────── */
+  --credit:      #38E1B0;
+  --debit:       #FF5B49;
+  --genome:      #A78BFA;
+  --neutral:     #E8A33D;
+
+  --credit-dim:  rgba(56,225,176,.16);
+  --debit-dim:   rgba(255,91,73,.16);
+  --genome-dim:  rgba(167,139,250,.16);
+
+  /* ─── Type colour ───────────────────────────────────────── */
+  --bone:        #E8E6E1;
+  --ash:         #8A9099;
+  --dust:        #4A5158;   /* NON-TEXT ONLY — ticks, rules, disabled */
+
+  /* ─── Emission ──────────────────────────────────────────── */
+  --glow-credit: 0 0 24px rgba(56,225,176,.30);
+  --glow-debit:  0 0 24px rgba(255,91,73,.26);
+  --glow-genome: 0 0 20px rgba(167,139,250,.28);
+  --glow-core:   0 0 64px rgba(232,230,225,.10);
+
+  /* ─── Brand ─────────────────────────────────────────────── */
+  /* The wordmark's own green (#40F830, public/brand/README.md) is NOT
+     --credit (#38E1B0). Kept as a separate token so the clash is explicit
+     rather than accidental. See app/drafts/page.tsx, "Decisions you owe". */
+  --brand:       #40F830;
+
+  /* ─── Type scale ────────────────────────────────────────── */
+  --t-number:    44px;
+  --t-number-lg: 56px;
+  --t-display:   28px;
+  --t-metric:    20px;
+  --t-body:      15px;
+  --t-label:     11px;
+  --t-micro:     10px;
+
+  /* ─── Space — 4px base ──────────────────────────────────── */
+  --s1: 4px;   --s2: 8px;   --s3: 12px;  --s4: 16px;
+  --s5: 24px;  --s6: 32px;  --s7: 48px;  --s8: 64px;
+
+  /* ─── Radii ─────────────────────────────────────────────── */
+  --r-chip: 6px;  --r-card: 10px;  --r-pill: 999px;  --r-frame: 44px;
+
+  /* ─── Motion ────────────────────────────────────────────── */
+  --rhr: 54;                              /* set live from WHOOP */
+  --beat: calc(60s / var(--rhr));
+  --ease-out:  cubic-bezier(.16,1,.3,1);
+  --ease-soft: cubic-bezier(.4,0,.2,1);
+  --d-fast: 180ms;  --d-base: 320ms;  --d-slow: 520ms;
+
+  color-scheme: dark;
+  background: var(--void);
+  color: var(--bone);
+  font-family: var(--font-ui), ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  min-height: 100dvh;
+}
+
+/* UI_SPEC §6 — "a single very soft radial gradient ... just enough that the
+   frame reads as sitting in space rather than pasted on flat black." */
+.loop-field {
+  position: relative;
+  isolation: isolate;
+}
+.loop-field::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(60% 50% at 50% 38%, rgba(56,225,176,.04), transparent 70%);
+  pointer-events: none;
+}
+
+/* ─── Typography ──────────────────────────────────────────── */
+
+.numeric { font-variant-numeric: tabular-nums; }
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, "SF Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.display {
+  font-family: var(--font-display), ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  font-style: normal; /* UI_SPEC §5: no italics anywhere */
+}
+
+/* UI_SPEC §9.1 — the value stays --bone in both directions; only the sign
+   carries the hue. A full-red 44px number makes a mildly negative day feel
+   like a catastrophe. */
+.hero-number {
+  font-family: var(--font-display), ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  /* Length-scaled. UI_SPEC §13.2 asks what happens to the number at four
+     digits; the answer is that a fixed size overruns the band ring, so the
+     size steps down as the value gets longer. --hero-steps is set per value. */
+  font-size: calc(var(--t-number) * var(--hero-scale, 1));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: .92;
+  /* The wordmark is generously spaced; the number should not be crushed. */
+  letter-spacing: -.005em;
+  color: var(--bone);
+  text-shadow: var(--glow-core);
+  white-space: nowrap;
+}
+@media (min-width: 1024px) {
+  .hero-number { font-size: calc(var(--t-number-lg) * var(--hero-scale, 1)); }
+}
+.hero-number .sign { font-size: .72em; color: var(--ash); margin-right: .06em; }
+.hero-number.is-credit .sign { color: var(--credit); }
+.hero-number.is-debit  .sign { color: var(--debit);  }
+
+/* UI_SPEC §9.3 — untracked uppercase at 11px is unreadable. */
+.label {
+  font-size: var(--t-label);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ash);
+  line-height: 1.2;
+}
+
+.micro {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--t-micro);
+  letter-spacing: .06em;
+  line-height: 1.3;
+  color: var(--ash);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Components ──────────────────────────────────────────── */
+
+/* UI_SPEC §9.2 */
+.delta {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--t-micro);
+  font-variant-numeric: tabular-nums;
+  padding: 3px var(--s2);
+  border-radius: var(--r-pill);
+  border: 1px solid currentColor;
+  display: inline-block;
+  white-space: nowrap;
+}
+.delta.is-credit { background: var(--credit-dim); color: var(--credit); }
+/* §4: --debit must not be used below 16px, so a small negative delta takes
+   --bone and lets the − glyph and the dim fill carry the direction. */
+.delta.is-debit  { background: var(--debit-dim);  color: var(--bone); border-color: var(--debit); }
+
+/* UI_SPEC §9.4 — the receipt. Hairlines only, no zebra, no card, no shadow. */
+.ledger-row {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: baseline;
+  gap: var(--s3);
+  min-height: 56px;
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.ledger-row .time  { font-family: var(--font-mono), monospace; font-size: var(--t-micro); color: var(--ash); letter-spacing: .06em; }
+.ledger-row .what  { font-size: var(--t-body); color: var(--bone); }
+.cite {
+  display: block;
+  font-family: var(--font-mono), monospace;
+  font-size: var(--t-micro);
+  line-height: 1.5;
+  color: var(--ash);
+  opacity: .75;
+  margin-top: 3px;
+}
+.ledger-row .value { font-family: var(--font-mono), monospace; font-size: var(--t-metric); font-variant-numeric: tabular-nums; text-align: right; color: var(--bone); }
+
+/* The CTA. Not a filled --credit block: a filled semantic hue on a button
+   reads as "you gained minutes", which is not what the button does. */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  width: 100%;
+  padding: var(--s4) var(--s5);
+  border-radius: var(--r-pill);
+  background: var(--bone);
+  color: var(--void);
+  font-size: var(--t-body);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  text-decoration: none;
+  transition: transform var(--d-fast) var(--ease-out), opacity var(--d-fast) var(--ease-out);
+}
+.cta:hover { opacity: .92; }
+.cta:active { transform: scale(.985); }
+
+.cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  padding: var(--s3) var(--s5);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--hairline);
+  background: transparent;
+  color: var(--bone);
+  font-size: var(--t-body);
+  text-decoration: none;
+  transition: border-color var(--d-fast) var(--ease-out);
+}
+.cta-ghost:hover { border-color: var(--dust); }
+
+.card {
+  background: var(--membrane);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-card);
+}
+
+.hairline { border: 0; border-top: 1px solid var(--hairline); margin: 0; }
+
+.link {
+  color: var(--bone);
+  text-decoration: none;
+  border-bottom: 1px solid var(--dust);
+  transition: border-color var(--d-fast) var(--ease-out);
+}
+.link:hover { border-bottom-color: var(--ash); }
+
+/* UI_SPEC §11 — focus is never removed. */
+.loop-ui a:focus-visible,
+.loop-ui button:focus-visible {
+  outline: 2px solid var(--credit);
+  outline-offset: 2px;
+  border-radius: var(--r-chip);
+}
+
+/* ─── The frame (UI_SPEC §6) ──────────────────────────────── */
+
+.frame {
+  width: 390px;
+  height: 844px;
+  border-radius: var(--r-frame);
+  background: var(--void);
+  border: 1px solid var(--hairline);
+  box-shadow:
+    0 0 0 1px rgba(232,230,225,.03),
+    0 40px 120px -20px rgba(0,0,0,.9);
+  overflow: hidden;
+  position: relative;
+  flex: none;
+}
+/* §6 — below 480px the frame dissolves entirely. */
+@media (max-width: 480px) {
+  .frame {
+    width: 100%;
+    height: auto;
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* ─── The Organism (UI_SPEC §7–8) ─────────────────────────── */
+
+@keyframes systole {
+  0%   { transform: scale(1.000); }
+  8%   { transform: scale(1.015); }
+  14%  { transform: scale(1.012); }
+  28%  { transform: scale(0.998); }
+  36%  { transform: scale(1.004); }
+  48%  { transform: scale(1.000); }
+  100% { transform: scale(1.000); }
+}
+
+.organism-core {
+  animation: systole var(--beat) var(--ease-soft) infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+/* §8 — spines grow from the neutral ring, staggered 18ms per hour index,
+   so the day draws itself clockwise. */
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+.spine, .band {
+  animation: draw var(--d-slow) var(--ease-out) forwards;
+}
+.band { animation-delay: 560ms; }
+
+.glow-credit { filter: drop-shadow(0 0 6px rgba(56,225,176,.55)); }
+.glow-debit  { filter: drop-shadow(0 0 6px rgba(255,91,73,.45)); }
+
+/* §8 — every value is encoded in geometry and colour; motion only adds
+   texture. The visualisation must be fully legible with zero animation. */
+@media (prefers-reduced-motion: reduce) {
+  .loop-ui .organism-core { animation: none; }
+  .loop-ui .spine,
+  .loop-ui .band { animation: none; stroke-dashoffset: 0 !important; }
+  .loop-ui *, .loop-ui *::before, .loop-ui *::after { transition-duration: 1ms !important; }
+}
+
+/* ─── Draft A — The Instrument ─────────────────────────────── */
+
+.shell-a {
+  display: grid;
+  gap: var(--s7);
+  padding: var(--s7) var(--s5) 120px;
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.a-mobile-hero { display: grid; place-items: center; }
+.a-shot { display: none; }
+
+.a-h1 {
+  font-size: clamp(32px, 7vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -.015em;
+  margin: var(--s6) 0 var(--s4);
+  max-width: 16ch;
+}
+.a-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  margin-top: var(--s7);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--hairline);
+  max-width: 380px;
+  font-size: 13px;
+}
+
+/* UI_SPEC §6 wide viewport: frame left of centre, panel beside it. */
+@media (min-width: 1024px) {
+  .shell-a {
+    grid-template-columns: 420px minmax(0, 1fr);
+    grid-template-areas: "shot copy";
+    gap: var(--s8);
+    padding: var(--s8) var(--s7) var(--s8);
+    align-items: center;
+  }
+  .a-mobile-hero { display: none; }
+  .a-shot { display: block; grid-area: shot; }
+  .a-copy { grid-area: copy; }
+  .a-h1 { font-size: 52px; margin-top: var(--s6); }
+}
+
+/* The frame as a product shot keeps its border at every width — §6's
+   dissolve rule is about the app rendering itself, not a picture of it. */
+.frame--shot { height: auto; min-height: 0; padding-bottom: var(--s5); }
+@media (max-width: 480px) {
+  .frame--shot {
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-frame);
+    box-shadow: 0 40px 120px -20px rgba(0,0,0,.9);
+  }
+}
+
+/* ─── Draft B — The Receipt ────────────────────────────────── */
+
+.shell-b {
+  display: grid;
+  gap: var(--s7);
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: var(--s7) var(--s5) 120px;
+  align-content: start;
+}
+.b-h1 {
+  font-size: clamp(38px, 9vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -.02em;
+  margin: var(--s5) 0 var(--s4);
+}
+.b-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  margin-top: var(--s6);
+}
+.b-receipt { padding: var(--s5); }
+.b-receipt-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding-bottom: var(--s4);
+  border-bottom: 1px solid var(--hairline);
+}
+.b-modifiers { padding-top: var(--s5); }
+.b-mod-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding: var(--s3) 0 var(--s3) var(--s4);
+  border-bottom: 1px solid var(--hairline);
+}
+.b-mod-row .cite { max-width: 46ch; }
+.b-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding-top: var(--s5);
+}
+.b-total-note {
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.7;
+  max-width: 60ch;
+  margin: var(--s4) 0 0;
+}
+
+@media (min-width: 900px) {
+  .shell-b {
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    gap: var(--s8);
+    padding-top: var(--s8);
+    align-items: start;
+  }
+  .b-head { position: sticky; top: var(--s8); }
+}
+
+/* ─── Draft C — The Conversion Table ───────────────────────── */
+
+.shell-c {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: var(--s8) var(--s5) 120px;
+}
+.c-h1 {
+  font-size: clamp(36px, 8vw, 62px);
+  line-height: 1.08;
+  letter-spacing: -.02em;
+  margin: var(--s6) 0 0;
+}
+.c-table { margin-top: var(--s8); border-top: 1px solid var(--hairline); }
+
+.c-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s5);
+  padding: var(--s5) 0;
+  border-bottom: 1px solid var(--hairline);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--d-fast) var(--ease-soft);
+}
+.c-row:hover { background: rgba(232,230,225,.02); }
+.c-row-left { min-width: 0; }
+.c-behaviour {
+  display: block;
+  font-size: clamp(17px, 2.6vw, 21px);
+  color: var(--bone);
+  letter-spacing: -.01em;
+}
+.c-qualifier {
+  display: block;
+  font-size: 14px;
+  color: var(--ash);
+  margin-top: 2px;
+}
+.c-cite {
+  display: block;
+  margin-top: var(--s2);
+  text-transform: none;
+  letter-spacing: .02em;
+  opacity: .8;
+  max-width: 58ch;
+}
+.c-row-right { text-align: right; flex: none; }
+.c-value {
+  font-family: var(--font-display), ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -.005em;
+  color: var(--bone);
+  white-space: nowrap;
+}
+.c-value .sign { font-size: .72em; margin-right: .06em; }
+.c-value.is-credit .sign { color: var(--credit); }
+.c-value.is-debit  .sign { color: var(--debit); }
+.c-rate {
+  display: block;
+  margin-top: var(--s2);
+  text-transform: none;
+  letter-spacing: .02em;
+  max-width: 26ch;
+  margin-left: auto;
+}
+
+.c-close {
+  margin-top: var(--s8);
+  display: grid;
+  gap: var(--s7);
+  justify-items: center;
+}
+.c-close-ring { position: relative; display: grid; place-items: center; }
+.c-close-number {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--s2);
+  pointer-events: none;
+}
+.c-h2 {
+  font-size: clamp(26px, 4.5vw, 34px);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  margin: 0 0 var(--s4);
+}
+.c-close-copy > p { margin: 0 0 var(--s3); }
+.c-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  margin-top: var(--s7);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--hairline);
+  font-size: 13px;
+}
+
+@media (min-width: 860px) {
+  .c-close {
+    grid-template-columns: 300px minmax(0, 1fr);
+    align-items: center;
+    justify-items: start;
+    gap: var(--s8);
+  }
+}
+
+/* ─── §9.6 Confidence band ─────────────────────────────────── */
+
+.cb-track {
+  position: relative;
+  height: 14px;
+  border-radius: var(--r-pill);
+  background: rgba(232,230,225,.03);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+.cb-interval {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: var(--r-pill);
+  background: linear-gradient(
+    90deg,
+    rgba(167,139,250,.06),
+    rgba(167,139,250,.30) 50%,
+    rgba(167,139,250,.06)
+  );
+}
+.cb-marker {
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--genome);
+  box-shadow: var(--glow-genome);
+}
+.cb-scale {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: var(--s2);
+}
+.cb-pct { font-size: 13px; color: var(--genome); }
+.cb-warn {
+  color: var(--neutral);
+  font-size: var(--t-body);
+  line-height: 1.6;
+  margin: var(--s3) 0 0;
+  max-width: 52ch;
+}
+
+/* ─── Draft D — Two Bodies ─────────────────────────────────── */
+
+.shell-d {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--s8) var(--s5) 120px;
+}
+.d-h1 {
+  font-size: clamp(36px, 8vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -.02em;
+  margin: var(--s6) 0 var(--s5);
+  max-width: 18ch;
+}
+.d-pair {
+  margin-top: var(--s8);
+  display: grid;
+  gap: var(--s5);
+}
+.d-panel { padding: var(--s5); }
+.d-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin-bottom: var(--s5);
+}
+.d-core { display: grid; place-items: center; padding: var(--s4) 0 var(--s5); }
+.d-wf-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding: var(--s2) 0;
+  font-size: 14px;
+}
+.d-wf-row.is-mult { padding-left: var(--s4); color: var(--ash); }
+.d-wf-row.is-clamp { padding-left: var(--s4); color: var(--neutral); }
+.d-wf-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding-top: var(--s3);
+  margin-top: var(--s3);
+  border-top: 1px solid var(--hairline);
+}
+.d-honesty { margin-top: var(--s8); padding: var(--s6); }
+.d-cta {
+  margin-top: var(--s8);
+  display: grid;
+  gap: var(--s3);
+  max-width: 420px;
+}
+.d-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  margin-top: var(--s7);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--hairline);
+  font-size: 13px;
+}
+
+@media (min-width: 860px) {
+  .d-pair { grid-template-columns: 1fr 1fr; gap: var(--s5); }
+}
+
+/* ─── Drafts index ─────────────────────────────────────────── */
+
+.shell-i {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--s8) var(--s5) 140px;
+}
+.i-h1 {
+  font-size: clamp(34px, 7vw, 54px);
+  line-height: 1.08;
+  letter-spacing: -.02em;
+  margin: var(--s6) 0 var(--s5);
+}
+.i-h2 {
+  font-size: clamp(24px, 4vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  margin: 0 0 var(--s3);
+}
+
+.i-grid { margin-top: var(--s8); display: grid; gap: var(--s4); }
+@media (min-width: 820px) { .i-grid { grid-template-columns: 1fr 1fr; } }
+
+.i-card {
+  display: block;
+  padding: var(--s5);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--d-base) var(--ease-soft),
+              background var(--d-base) var(--ease-soft);
+}
+.i-card:hover { border-color: var(--dust); background: rgba(232,230,225,.015); }
+.i-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+.i-card-name {
+  font-size: 30px;
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  margin: var(--s4) 0 var(--s2);
+}
+.i-thesis { color: var(--credit); font-size: 15px; margin: 0 0 var(--s3); }
+.i-body { color: var(--ash); font-size: 14px; line-height: 1.6; margin: 0 0 var(--s4); }
+.i-meta { margin: 0; padding-top: var(--s4); border-top: 1px solid var(--hairline); }
+.i-meta dt { margin-bottom: 2px; }
+.i-meta dd { margin: 0 0 var(--s3); color: var(--ash); font-size: 13.5px; line-height: 1.5; }
+.i-meta dd:last-child { margin-bottom: 0; }
+
+.i-compare { margin-top: var(--s8); padding-top: var(--s7); border-top: 1px solid var(--hairline); }
+.i-rings {
+  margin-top: var(--s6);
+  display: grid;
+  gap: var(--s7);
+  justify-items: center;
+}
+.i-rings figure { margin: 0; display: grid; justify-items: center; gap: var(--s4); }
+.i-rings figcaption { text-align: center; }
+@media (min-width: 720px) { .i-rings { grid-template-columns: 1fr 1fr; } }
+
+.i-decisions { margin-top: var(--s8); padding-top: var(--s7); border-top: 1px solid var(--hairline); }
+.i-decision {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: var(--s4);
+  padding: var(--s5) 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.i-decision-n { color: var(--ash); font-size: 13px; }
+.i-decision-title { font-size: 17px; font-weight: 600; margin: 0 0 var(--s2); letter-spacing: -.01em; }
+.i-decision-body { color: var(--ash); font-size: 14px; line-height: 1.65; margin: 0; max-width: 72ch; }
+
+.i-foot { margin-top: var(--s7); padding-top: var(--s4); border-top: 1px solid var(--hairline); }
+.i-foot .micro { line-height: 1.8; }
