@@ -119,9 +119,16 @@ for (const size of [512, 180]) {
   await icon.png({ compressionLevel: 9 }).toFile(`${OUT}/loop-markicon-${size}.png`);
 }
 
-// --- Favicons: wordmark at apple-icon size, mark alone at 32px where four
-// letters would be illegible. ---
-await sharp(await (await square(sharp(markBuf), 256, 0.68, BLACK)).png().toBuffer())
+// --- Favicons: the wordmark at every size.
+// "loop" stays legible down to 32px — checked by rendering it and looking, rather
+// than assuming four letters must be too many. Consistency wins where both read.
+//
+// There is deliberately no app/favicon.ico. Next.js emits favicon.ico with
+// sizes="any", which browsers prefer over icon.png, so a stale .ico silently
+// overrides everything here (that is exactly what happened: create-next-app's
+// default favicon shipped for the first day). Keeping only icon.png leaves one
+// source of truth. See node_modules/next/dist/docs -> file-conventions/metadata/app-icons.
+await sharp(await (await square(sharp(wordmarkBuf), 256, 0.84, BLACK)).png().toBuffer())
   .resize(32, 32)
   .png()
   .toFile("app/icon.png");
