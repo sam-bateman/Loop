@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { entryId, formatCompact, type LedgerEntry } from "@/lib/loop/fixtures";
+import { formatCompact, type LedgerEntry } from "@/lib/loop/fixtures";
+import { factorId } from "@/lib/loop/adapter";
 
 /**
  * UI_SPEC.md §9.4 — the receipt row. Deliberately the most conventional-looking
@@ -8,9 +9,11 @@ import { entryId, formatCompact, type LedgerEntry } from "@/lib/loop/fixtures";
  */
 export default function LedgerRow({
   entry,
+  date,
   showTrace = true,
 }: {
   entry: LedgerEntry;
+  date?: string;
   showTrace?: boolean;
 }) {
   const body = (
@@ -29,10 +32,10 @@ export default function LedgerRow({
     </>
   );
 
-  if (!showTrace) return <div className="ledger-row">{body}</div>;
+  if (!showTrace || !date) return <div className="ledger-row">{body}</div>;
 
   return (
-    <Link className="ledger-row is-link" href={`/ui/explain/${entryId(entry)}`}>
+    <Link className="ledger-row is-link" href={`/ui/explain/${factorId(date, entry.what)}`}>
       {body}
     </Link>
   );

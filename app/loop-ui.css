@@ -946,3 +946,21 @@
 }
 .explain-detail { color: var(--ash); font-size: 14px; margin: 0; }
 .explain-source { width: 100%; margin-top: var(--s7); }
+
+/* ─── Source banner ────────────────────────────────────────── */
+
+.source-banner {
+  margin: var(--s5) var(--s5) 0;
+  padding: var(--s4);
+  border: 1px solid var(--neutral);
+  border-radius: var(--r-card);
+  background: var(--membrane);
+}
+.source-banner-note {
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.6;
+  color: var(--ash);
+  margin: var(--s2) 0 var(--s3);
+}
+.source-banner-cta { width: 100%; }

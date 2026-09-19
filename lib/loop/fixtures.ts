@@ -445,66 +445,6 @@ export type TraceRow = {
   cite?: string;
 };
 
-/** §9.8 waterfall — the arithmetic behind one scored factor, in order. */
-export const SAMPLE_TRACES: Record<string, TraceRow[]> = {
-  "sleep-duration": [
-    { label: "8h 12m in bed, 17m awake", value: "8.20h", kind: "base" },
-    { label: "1.4h over the 6.8h population reference", value: 13, kind: "base",
-      cite: "Sheehan 2019, Sleep — NHIS US adult mean" },
-    { label: "+9 min per hour of surplus", value: "+9/h", kind: "mult",
-      cite: "Cappuccio 2010, Sleep · 16 cohorts, n=1,382,999" },
-    { label: "Benefit arm set at half the deficit rate", value: "×0.50", kind: "mult",
-      cite: "The curve is J-shaped; long sleep is not protective" },
-    { label: "Age band 30–39", value: "×0.92", kind: "mult",
-      cite: "Fadnes 2022, PLOS Medicine" },
-  ],
-  "sleep-consistency": [
-    { label: "92% consistency, against a 65% reference", value: 20, kind: "base",
-      cite: "WHOOP population midpoint" },
-    { label: "±25 min at the extremes", value: "±25", kind: "mult",
-      cite: "Windred 2024, Sleep · UK Biobank, n=60,977 · HR 1.53" },
-    { label: "Discounted from the ±60 the hazard ratio would justify", value: "×0.42", kind: "mult",
-      cite: "WHOOP's consistency % is not the validated Sleep Regularity Index" },
-    { label: "Age band 30–39", value: "×0.92", kind: "mult",
-      cite: "Fadnes 2022, PLOS Medicine" },
-  ],
-  "resting-heart-rate": [
-    { label: "54 bpm, 6 below the 60 bpm reference", value: 7, kind: "base",
-      cite: "NHANES adult mean" },
-    { label: "+6 min per 5 bpm under reference", value: "+6/5bpm", kind: "mult",
-      cite: "Zhang 2016, CMAJ · 46 cohorts, n=1,246,203" },
-    { label: "Bonus halved — already credited for activity today", value: "×0.50", kind: "guard",
-      cite: "METHODOLOGY-WHOOP §4, guard 3 · low RHR is largely a consequence of training" },
-    { label: "Age band 30–39", value: "×0.92", kind: "mult",
-      cite: "Fadnes 2022, PLOS Medicine" },
-  ],
-  "heart-rate-variability": [
-    { label: "78 ms, 11% over your 30-day baseline", value: 6, kind: "base",
-      cite: "Scored against your own baseline, not an absolute threshold" },
-    { label: "±5 min per 10% deviation", value: "±5/10%", kind: "mult",
-      cite: "Hillebrand 2013, Europace · HR 1.35 for cardiovascular events" },
-    { label: "Clamped at ±20 min", value: "not reached", kind: "clamp",
-      cite: "The weakest factor in the model, and flagged as such" },
-    { label: "Age band 30–39", value: "×0.92", kind: "mult",
-      cite: "Fadnes 2022, PLOS Medicine" },
-  ],
-  "cardiovascular-activity": [
-    { label: "45 min at zone 2 or above", value: "3 blocks", kind: "base",
-      cite: "26 min zone 2 + 11 min zone 3 + 8 min zone 2" },
-    { label: "+6 min per 15-minute block", value: 18, kind: "base",
-      cite: "Wen 2011, Lancet · n=416,175 · 15 min/day → 14% lower mortality" },
-    { label: "Tapered — third block weighted 0.7", value: "×0.90", kind: "mult",
-      cite: "Wen's own dose-response; benefit plateaus past ~100 min/day" },
-    { label: "Capped at +60 min/day", value: "not reached", kind: "clamp" },
-    { label: "Age band 30–39", value: "×0.92", kind: "mult",
-      cite: "Fadnes 2022, PLOS Medicine" },
-  ],
-};
-
-/** Stable id per ledger entry, for /explain/:id. */
-export const entryId = (e: LedgerEntry) =>
-  e.what.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
 export type LedgerDay = {
   date: string;
   label: string;
@@ -522,32 +462,32 @@ export const SAMPLE_DAYS: LedgerDay[] = [
   {
     date: "2026-09-17", label: "Yesterday", minutes: 41,
     entries: [
-      { hour: 7, time: "06:48", what: "Sleep duration", detail: "7h 38m — 0.8h above the 6.8h population average", minutes: 7, band: "sleep", cite: "Cappuccio 2010, Sleep · n=1,382,999", href: "/methodology" },
-      { hour: 7, time: "06:48", what: "Sleep consistency", detail: "88% — regularity predicts mortality more strongly than duration", minutes: 15, band: "sleep", cite: "Windred 2024, Sleep · n=60,977", href: "/methodology" },
-      { hour: 8, time: "07:55", what: "Resting heart rate", detail: "56 bpm — 4 below the 60 bpm reference", minutes: 2, band: "recovery", guarded: true, cite: "Zhang 2016, CMAJ · n=1,246,203", href: "/methodology" },
-      { hour: 8, time: "07:55", what: "Heart rate variability", detail: "71 ms — 1% over your 30-day baseline", minutes: 0, band: "recovery", cite: "Hillebrand 2013, Europace", href: "/methodology" },
-      { hour: 19, time: "19:02", what: "Cardiovascular activity", detail: "52 min at zone 2+ — tapered past 30 min, capped at +60", minutes: 17, band: "movement", cite: "Wen 2011, Lancet · n=416,175", href: "/methodology" },
+      { hour: 7, time: "sleep", what: "Sleep duration", detail: "7h 38m — 0.8h above the 6.8h population average", minutes: 7, band: "sleep", cite: "Cappuccio 2010, Sleep · n=1,382,999", href: "/methodology" },
+      { hour: 7, time: "sleep", what: "Sleep consistency", detail: "88% — regularity predicts mortality more strongly than duration", minutes: 15, band: "sleep", cite: "Windred 2024, Sleep · n=60,977", href: "/methodology" },
+      { hour: 8, time: "wake", what: "Resting heart rate", detail: "56 bpm — 4 below the 60 bpm reference", minutes: 2, band: "recovery", guarded: true, cite: "Zhang 2016, CMAJ · n=1,246,203", href: "/methodology" },
+      { hour: 8, time: "wake", what: "Heart rate variability", detail: "71 ms — 1% over your 30-day baseline", minutes: 0, band: "recovery", cite: "Hillebrand 2013, Europace", href: "/methodology" },
+      { hour: 19, time: "day", what: "Cardiovascular activity", detail: "52 min at zone 2+ — tapered past 30 min, capped at +60", minutes: 17, band: "movement", cite: "Wen 2011, Lancet · n=416,175", href: "/methodology" },
     ],
   },
   {
     date: "2026-09-16", label: "Tuesday", minutes: -12,
     entries: [
-      { hour: 7, time: "07:20", what: "Sleep duration", detail: "5h 42m — 1.1h below the 6.8h population average", minutes: -18, band: "sleep", cite: "Cappuccio 2010, Sleep · RR 1.12 for short sleep", href: "/methodology" },
-      { hour: 7, time: "07:20", what: "Sleep consistency", detail: "54% — penalty halved, duration already scored negative", minutes: -4, band: "sleep", guarded: true, cite: "METHODOLOGY-WHOOP §4, guard 2", href: "/methodology" },
-      { hour: 8, time: "08:10", what: "Resting heart rate", detail: "62 bpm — 2 above the 60 bpm reference", minutes: -4, band: "recovery", cite: "Zhang 2016, CMAJ · HR 1.09 per 10 bpm", href: "/methodology" },
-      { hour: 8, time: "08:10", what: "Heart rate variability", detail: "58 ms — 17% under baseline, halved against negative RHR", minutes: -4, band: "recovery", guarded: true, cite: "METHODOLOGY-WHOOP §4, guard 1", href: "/methodology" },
-      { hour: 20, time: "20:30", what: "Sedentary day", detail: "Day strain 4.2 — minimal cardiovascular load", minutes: -10, band: "movement", cite: "Ekelund 2016, Lancet · >1,000,000 participants", href: "/methodology" },
-      { hour: 21, time: "21:00", what: "Cardiovascular activity", detail: "28 min at zone 2+", minutes: 28, band: "movement", cite: "Wen 2011, Lancet · n=416,175", href: "/methodology" },
+      { hour: 7, time: "sleep", what: "Sleep duration", detail: "5h 42m — 1.1h below the 6.8h population average", minutes: -18, band: "sleep", cite: "Cappuccio 2010, Sleep · RR 1.12 for short sleep", href: "/methodology" },
+      { hour: 7, time: "sleep", what: "Sleep consistency", detail: "54% — penalty halved, duration already scored negative", minutes: -4, band: "sleep", guarded: true, cite: "METHODOLOGY-WHOOP §4, guard 2", href: "/methodology" },
+      { hour: 8, time: "wake", what: "Resting heart rate", detail: "62 bpm — 2 above the 60 bpm reference", minutes: -4, band: "recovery", cite: "Zhang 2016, CMAJ · HR 1.09 per 10 bpm", href: "/methodology" },
+      { hour: 8, time: "wake", what: "Heart rate variability", detail: "58 ms — 17% under baseline, halved against negative RHR", minutes: -4, band: "recovery", guarded: true, cite: "METHODOLOGY-WHOOP §4, guard 1", href: "/methodology" },
+      { hour: 20, time: "day", what: "Sedentary day", detail: "Day strain 4.2 — minimal cardiovascular load", minutes: -10, band: "movement", cite: "Ekelund 2016, Lancet · >1,000,000 participants", href: "/methodology" },
+      { hour: 21, time: "day", what: "Cardiovascular activity", detail: "28 min at zone 2+", minutes: 28, band: "movement", cite: "Wen 2011, Lancet · n=416,175", href: "/methodology" },
     ],
   },
   {
     date: "2026-09-15", label: "Monday", minutes: 66,
     entries: [
-      { hour: 7, time: "06:30", what: "Sleep duration", detail: "8h 34m — 1.7h above the 6.8h population average", minutes: 14, band: "sleep", cite: "Cappuccio 2010, Sleep · n=1,382,999", href: "/methodology" },
-      { hour: 7, time: "06:30", what: "Sleep consistency", detail: "96% — regularity predicts mortality more strongly than duration", minutes: 20, band: "sleep", cite: "Windred 2024, Sleep · n=60,977", href: "/methodology" },
-      { hour: 8, time: "07:40", what: "Resting heart rate", detail: "51 bpm — 9 below the 60 bpm reference", minutes: 5, band: "recovery", guarded: true, cite: "Zhang 2016, CMAJ · n=1,246,203", href: "/methodology" },
-      { hour: 8, time: "07:40", what: "Heart rate variability", detail: "86 ms — 22% over your 30-day baseline", minutes: 9, band: "recovery", cite: "Hillebrand 2013, Europace", href: "/methodology" },
-      { hour: 18, time: "18:05", what: "Cardiovascular activity", detail: "72 min at zone 2+ — tapered past 30 min, capped at +60", minutes: 18, band: "movement", cite: "Wen 2011, Lancet · n=416,175", href: "/methodology" },
+      { hour: 7, time: "sleep", what: "Sleep duration", detail: "8h 34m — 1.7h above the 6.8h population average", minutes: 14, band: "sleep", cite: "Cappuccio 2010, Sleep · n=1,382,999", href: "/methodology" },
+      { hour: 7, time: "sleep", what: "Sleep consistency", detail: "96% — regularity predicts mortality more strongly than duration", minutes: 20, band: "sleep", cite: "Windred 2024, Sleep · n=60,977", href: "/methodology" },
+      { hour: 8, time: "wake", what: "Resting heart rate", detail: "51 bpm — 9 below the 60 bpm reference", minutes: 5, band: "recovery", guarded: true, cite: "Zhang 2016, CMAJ · n=1,246,203", href: "/methodology" },
+      { hour: 8, time: "wake", what: "Heart rate variability", detail: "86 ms — 22% over your 30-day baseline", minutes: 9, band: "recovery", cite: "Hillebrand 2013, Europace", href: "/methodology" },
+      { hour: 18, time: "day", what: "Cardiovascular activity", detail: "72 min at zone 2+ — tapered past 30 min, capped at +60", minutes: 18, band: "movement", cite: "Wen 2011, Lancet · n=416,175", href: "/methodology" },
     ],
   },
   {

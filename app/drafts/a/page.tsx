@@ -3,6 +3,7 @@ import HeroNumber from "@/components/loop/HeroNumber";
 import Organism from "@/components/loop/Organism";
 import Switcher from "@/components/loop/Switcher";
 import TodayScreen from "@/components/loop/TodayScreen";
+import { DEMO_DATA } from "@/lib/loop/data";
 import Wordmark from "@/components/loop/Wordmark";
 import {
   DAY_SPINE_CLAMP,
@@ -133,7 +134,7 @@ export default function DraftA() {
         {/* ─── Desktop product shot: the real frame, per §6 ─── */}
         <section className="a-shot" aria-label="Product preview">
           <div className="frame frame--shot">
-            <TodayScreen ringSize={342} />
+            <TodayScreen data={DEMO_DATA} ringSize={342} />
           </div>
         </section>
       </main>
