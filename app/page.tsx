@@ -60,7 +60,7 @@ export default async function Home({
           href="/api/auth/login"
           className="block w-full text-center rounded-full bg-text text-bg font-semibold text-[15px] py-4 active:scale-[0.98] transition-transform"
         >
-          Connect WHOOP
+          Sign in with WHOOP
         </a>
 
         <p className="text-faint text-[12px] leading-relaxed mt-4 text-center">

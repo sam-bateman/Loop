@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     session.expiresAt = Date.now() + token.expires_in * 1000;
     session.oauthState = undefined;
     await session.save();
-    return NextResponse.redirect(new URL("/dashboard", url.origin));
+    return NextResponse.redirect(new URL("/onboarding", url.origin));
   } catch {
     return NextResponse.redirect(new URL("/?error=token_exchange_failed", url.origin));
   }

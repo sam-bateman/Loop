@@ -168,6 +168,15 @@ export type WhoopData = {
   workouts: Workout[];
 };
 
+/** Just the two cheap identity calls — used to prefill onboarding. */
+export async function fetchBasics(token: string) {
+  const [profile, body] = await Promise.all([
+    get<Profile>("/user/profile/basic", token),
+    get<Body>("/user/measurement/body", token),
+  ]);
+  return { profile, body };
+}
+
 /** Pulls the last `days` of everything Loop scores, in parallel. */
 export async function fetchAll(token: string, days = 30): Promise<WhoopData> {
   const start = new Date(Date.now() - days * 86400_000).toISOString();

@@ -59,3 +59,7 @@ body {
 .prose-loop table { width: 100%; border-collapse: collapse; margin: 0 0 18px; font-size: 13.5px; display: block; overflow-x: auto; }
 .prose-loop th { text-align: left; color: var(--text); font-weight: 600; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
 .prose-loop td { padding: 8px 12px 8px 0; border-bottom: 1px solid color-mix(in srgb, var(--line) 50%, transparent); vertical-align: top; }
+
+/* Tape pickers scroll horizontally; the scrollbar would fight the tick marks. */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
