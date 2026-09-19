@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import {
   R,
   organismGeometry,
   membranePath,
   membraneAmplitude,
   type Band,
-} from "../_lib/loop";
+} from "@/lib/loop/fixtures";
 
 /**
  * The centrepiece — UI_SPEC.md §7.
@@ -44,7 +44,9 @@ export default function Organism({
 }) {
   const geo = organismGeometry(hours, bands, { absentFrom, baselineDeltaYears, clampAt });
   const amplitude = last7 ? membraneAmplitude(last7) : 0;
-  const uid = useRef(`org-${Math.random().toString(36).slice(2, 8)}`).current;
+  /* useId, not Math.random: the server and the client must agree on the
+     gradient and filter ids or React reports a hydration mismatch. */
+  const uid = `org${useId().replace(/[:«»]/g, "")}`;
 
   // §7 layer ④ — the noise seed advances at 0.06 units/second, "slow enough
   // that the movement is felt rather than watched".

@@ -1,9 +1,9 @@
 import Link from "next/link";
-import HeroNumber from "../_components/HeroNumber";
-import Organism from "../_components/Organism";
-import Switcher from "../_components/Switcher";
-import TodayScreen from "../_components/TodayScreen";
-import Wordmark from "../_components/Wordmark";
+import HeroNumber from "@/components/loop/HeroNumber";
+import Organism from "@/components/loop/Organism";
+import Switcher from "@/components/loop/Switcher";
+import TodayScreen from "@/components/loop/TodayScreen";
+import Wordmark from "@/components/loop/Wordmark";
 import {
   DAY_SPINE_CLAMP,
   SAMPLE_24_DAYS,
@@ -12,7 +12,7 @@ import {
   SAMPLE_LAST_7,
   SAMPLE_RHR,
   SAMPLE_TOTAL,
-} from "../_lib/loop";
+} from "@/lib/loop/fixtures";
 
 export const metadata = { title: "Loop — draft A, The Instrument" };
 

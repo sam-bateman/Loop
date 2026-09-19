@@ -745,3 +745,204 @@
 
 .i-foot { margin-top: var(--s7); padding-top: var(--s4); border-top: 1px solid var(--hairline); }
 .i-foot .micro { line-height: 1.8; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   APP SHELL — the in-app screens (UI_SPEC.md §6, §10)
+   These are the real product surfaces, not the landing drafts.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.app-stage {
+  display: grid;
+  justify-content: center;
+  align-content: start;
+  gap: var(--s7);
+  padding: var(--s7) var(--s5);
+  min-height: 100dvh;
+}
+
+/* The frame is a column: body scrolls, tab bar is pinned. */
+.frame { display: flex; flex-direction: column; }
+.frame-body { flex: 1; min-height: 0; padding-bottom: var(--s5); }
+.frame-body.is-scroll { overflow-y: auto; overscroll-behavior: contain; }
+.frame-body.is-scroll::-webkit-scrollbar { width: 0; }
+
+/* §6 wide viewport: a 360px attribution panel beside the frame. */
+.app-panel { display: none; }
+@media (min-width: 1024px) {
+  .app-stage {
+    grid-template-columns: 390px 360px;
+    align-items: start;
+    padding: var(--s8) var(--s7);
+  }
+  .app-panel { display: block; padding-top: var(--s8); }
+}
+.panel-note {
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.8;
+  margin: var(--s6) 0 0;
+  padding-top: var(--s4);
+  border-top: 1px solid var(--hairline);
+}
+
+/* ─── Tab bar ──────────────────────────────────────────────── */
+
+.tabbar {
+  flex: none;
+  display: flex;
+  border-top: 1px solid var(--hairline);
+  background: var(--void);
+}
+.tab {
+  flex: 1;
+  padding: var(--s4) var(--s2);
+  text-align: center;
+  text-decoration: none;
+  color: var(--ash);
+  transition: color var(--d-fast) var(--ease-soft);
+}
+.tab[data-active] { color: var(--bone); }
+.tab:hover { color: var(--bone); }
+
+/* ─── Screens ──────────────────────────────────────────────── */
+
+.screen { padding: var(--s7) var(--s5) var(--s5); }
+
+.ledger-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--s7) var(--s5) var(--s4);
+}
+.ledger-day {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s3) var(--s5);
+  background: var(--membrane);
+}
+.ledger-row.is-link {
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--d-fast) var(--ease-soft);
+}
+.ledger-row.is-link:hover { background: rgba(232,230,225,.02); }
+
+/* §9.9 — a hairline outline at 40%, plus a label naming what is missing. */
+.empty-state {
+  display: grid;
+  place-items: center;
+  padding: var(--s6);
+  margin: var(--s3) 0;
+  border: 1px dashed var(--dust);
+  border-radius: var(--r-card);
+  opacity: .4;
+}
+
+/* ─── §9.8 Waterfall ───────────────────────────────────────── */
+
+.wf-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding: var(--s3) 0;
+  font-size: 14px;
+}
+.wf-row.is-base .wf-label { color: var(--bone); }
+.wf-row.is-mult { padding-left: var(--s4); }
+.wf-row.is-mult .wf-label { color: var(--ash); }
+.wf-row.is-guard { padding-left: var(--s4); }
+.wf-row.is-guard .wf-label,
+.wf-row.is-guard .wf-value { color: var(--neutral); }
+.wf-row.is-clamp { padding-left: var(--s4); }
+.wf-row.is-clamp .wf-label,
+.wf-row.is-clamp .wf-value { color: var(--neutral); }
+.wf-label { display: block; }
+.wf-value {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--ash);
+  text-align: right;
+  white-space: nowrap;
+  flex: none;
+}
+.wf-row.is-base .wf-value { color: var(--bone); }
+.wf-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding-top: var(--s3);
+  margin-top: var(--s3);
+  border-top: 1px solid var(--hairline);
+}
+.wf-total-value { font-size: var(--t-metric); color: var(--bone); }
+
+/* ─── §10.3 Genome ─────────────────────────────────────────── */
+
+.variant-row {
+  display: grid;
+  grid-template-columns: 72px 52px 40px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--s2);
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 13px;
+}
+.variant-row[data-absent] { opacity: .45; }
+.variant-rsid { color: var(--ash); }
+.variant-gene { color: var(--ash); font-size: 12px; }
+.variant-genotype { color: var(--bone); font-size: 13px; }
+.variant-effect { color: var(--ash); font-size: 12.5px; }
+.variant-mult {
+  color: var(--genome);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* §5.4.3 / §11 — the portability limit sits in the layout at full size. */
+.portability-note {
+  color: var(--neutral);
+  font-size: var(--t-body);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* §4 — destructive actions are --bone on --membrane with a --debit hairline,
+   never a filled red button. A filled red button in this palette reads as
+   "you lost minutes", which is the wrong message on a confirmation. */
+.danger-button {
+  display: block;
+  width: 100%;
+  margin-top: var(--s7);
+  padding: var(--s4);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--debit);
+  background: var(--membrane);
+  color: var(--bone);
+  font-family: inherit;
+  font-size: var(--t-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--d-fast) var(--ease-soft);
+}
+.danger-button:hover { background: var(--debit-dim); }
+
+/* ─── §10.4 Explain ────────────────────────────────────────── */
+
+.back-link { text-decoration: none; color: var(--ash); }
+.back-link:hover { color: var(--bone); }
+.explain-title {
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  margin: var(--s2) 0 var(--s2);
+}
+.explain-detail { color: var(--ash); font-size: 14px; margin: 0; }
+.explain-source { width: 100%; margin-top: var(--s7); }

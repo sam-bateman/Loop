@@ -1,9 +1,9 @@
 import Link from "next/link";
-import ConfidenceBand from "../_components/ConfidenceBand";
-import Organism from "../_components/Organism";
-import Switcher from "../_components/Switcher";
-import Wordmark from "../_components/Wordmark";
-import { formatCompact } from "../_lib/loop";
+import ConfidenceBand from "@/components/loop/ConfidenceBand";
+import Organism from "@/components/loop/Organism";
+import Switcher from "@/components/loop/Switcher";
+import Wordmark from "@/components/loop/Wordmark";
+import { formatCompact } from "@/lib/loop/fixtures";
 
 export const metadata = { title: "Loop — draft C, Two Bodies" };
 

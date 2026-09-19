@@ -1,4 +1,4 @@
-import { formatMinutes } from "../_lib/loop";
+import { formatMinutes } from "@/lib/loop/fixtures";
 
 /**
  * UI_SPEC.md §9.1 — the value stays --bone in both directions; only the sign

@@ -1,13 +1,13 @@
 import Link from "next/link";
-import Switcher from "../_components/Switcher";
-import Wordmark from "../_components/Wordmark";
+import Switcher from "@/components/loop/Switcher";
+import Wordmark from "@/components/loop/Wordmark";
 import {
   SAMPLE_LEDGER,
   SAMPLE_MODIFIERS,
   SAMPLE_TOTAL,
   formatCompact,
   formatMinutes,
-} from "../_lib/loop";
+} from "@/lib/loop/fixtures";
 
 export const metadata = { title: "Loop — draft B, The Receipt" };
 

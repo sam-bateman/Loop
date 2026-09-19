@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Quicksand, Geist_Mono } from "next/font/google";
-import "./loop.css";
+import "../loop-ui.css";
 
 /**
  * TYPE — a deliberate departure from UI_SPEC.md §5.

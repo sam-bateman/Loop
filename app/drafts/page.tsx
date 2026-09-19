@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Organism from "./_components/Organism";
-import Switcher from "./_components/Switcher";
-import Wordmark from "./_components/Wordmark";
+import Organism from "@/components/loop/Organism";
+import Switcher from "@/components/loop/Switcher";
+import Wordmark from "@/components/loop/Wordmark";
 import {
   DAY_SPINE_CLAMP,
   SAMPLE_24_DAYS,
@@ -9,7 +9,7 @@ import {
   SAMPLE_HOURS,
   SAMPLE_LAST_7,
   SAMPLE_RHR,
-} from "./_lib/loop";
+} from "@/lib/loop/fixtures";
 
 export const metadata = { title: "Loop — landing page drafts" };
 
