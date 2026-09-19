@@ -1,0 +1,12 @@
+# The ClawBio virtualenv is a local analysis tool, not part of the app — it alone
+# pushed the deployment past Vercel's 15,000-file limit.
+.venv-clawbio
+
+# The uncompressed genome. Only demo-data/clawbio/*.json is read at request time
+# (lib/genomics.ts); the raw genotype is precompute input and never shipped.
+demo-data/*.txt
+demo-data/*.txt.gz
+demo-data/.clawbio-tmp
+
+# Brand source art — derived PNGs in public/brand are what the app serves.
+public/brand/loop-wordmark.jpg
