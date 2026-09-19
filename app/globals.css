@@ -8,9 +8,11 @@
   --text: #f2f1ed;
   --muted: #8b8b84;
   --faint: #5c5c57;
-  --gain: #86d9a6;
-  --loss: #ef8f7c;
-  --accent: #e8c15a;
+  /* Brand green, sampled from public/brand/loop-wordmark.png.
+     It doubles as the "life gained" colour — gaining time is the brand. */
+  --accent: #40f830;
+  --gain: #40f830;
+  --loss: #ff6b52;
 }
 
 @theme inline {

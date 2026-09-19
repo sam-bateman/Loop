@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
@@ -23,10 +24,14 @@ export default async function Home({
   return (
     <main className="min-h-dvh flex flex-col px-6 py-10 max-w-lg mx-auto">
       <div className="flex-1 flex flex-col justify-center">
-        <div className="flex items-center gap-2.5 mb-12">
-          <span className="w-3.5 h-3.5 rounded-full border-2 border-accent" />
-          <span className="text-sm tracking-[0.2em] uppercase text-muted">Loop</span>
-        </div>
+        <Image
+          src="/brand/loop-wordmark.png"
+          alt="Loop"
+          width={1446}
+          height={742}
+          priority
+          className="w-[104px] h-auto mb-12"
+        />
 
         <h1 className="text-[34px] leading-[1.12] font-semibold tracking-[-0.025em] mb-5">
           Your WHOOP data,

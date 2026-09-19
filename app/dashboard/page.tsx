@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { accessToken, fetchAll } from "@/lib/whoop";
@@ -90,10 +91,7 @@ export default async function Dashboard() {
   return (
     <main className="min-h-dvh px-6 py-8 max-w-lg mx-auto pb-16">
       <header className="flex items-center justify-between mb-10">
-        <div className="flex items-center gap-2.5">
-          <span className="w-3 h-3 rounded-full border-2 border-accent" />
-          <span className="text-[12px] tracking-[0.2em] uppercase text-muted">Loop</span>
-        </div>
+        <Image src="/brand/loop-wordmark.png" alt="Loop" width={1446} height={742} priority className="w-[72px] h-auto" />
         <a href="/api/auth/logout" className="text-[12.5px] text-faint hover:text-muted transition-colors">
           Disconnect
         </a>
