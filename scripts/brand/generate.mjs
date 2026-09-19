@@ -82,9 +82,12 @@ const markBox = await inkBox(sharp(flatBuf), 930, 1822);
 await sharp(flatBuf).extract(markBox).png({ compressionLevel: 9 }).toFile(`${OUT}/loop-mark.png`);
 const markBuf = await sharp(flatBuf).extract(markBox).png().toBuffer();
 
-// --- Square app icon: the mark on Loop black. This is what WHOOP gets. ---
+// --- Square app icon: the full wordmark on Loop black. This is what WHOOP gets.
+// The `l` and `p` have to stay readable — the infinity alone reads as a generic
+// infinity symbol and loses the name entirely, which is the whole point of a
+// pairing logo sitting next to the WHOOP mark on the consent screen. ---
 for (const size of [1024, 512, 180]) {
-  const icon = await square(sharp(markBuf), size, 0.62, BLACK);
+  const icon = await square(sharp(wordmarkBuf), size, 0.84, BLACK);
   await icon.png({ compressionLevel: 9 }).toFile(`${OUT}/loop-icon-${size}.png`);
 }
 
@@ -92,12 +95,19 @@ for (const size of [1024, 512, 180]) {
 const onBlack = await square(sharp(wordmarkBuf), 1024, 0.78, BLACK);
 await onBlack.png({ compressionLevel: 9 }).toFile(`${OUT}/loop-wordmark-black.png`);
 
-// --- Favicon for the web app ---
+// --- The mark alone, squared. Kept for places too small for four letters. ---
+for (const size of [512, 180]) {
+  const icon = await square(sharp(markBuf), size, 0.62, BLACK);
+  await icon.png({ compressionLevel: 9 }).toFile(`${OUT}/loop-markicon-${size}.png`);
+}
+
+// --- Favicons: wordmark at apple-icon size, mark alone at 32px where four
+// letters would be illegible. ---
 await sharp(await (await square(sharp(markBuf), 256, 0.68, BLACK)).png().toBuffer())
   .resize(32, 32)
   .png()
   .toFile("app/icon.png");
-await sharp(await (await square(sharp(markBuf), 180, 0.62, BLACK)).png().toBuffer())
+await sharp(await (await square(sharp(wordmarkBuf), 180, 0.84, BLACK)).png().toBuffer())
   .toFile("app/apple-icon.png");
 
 console.log("wordmark", wordBox);
