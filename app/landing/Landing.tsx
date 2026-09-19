@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useMotionBudget } from "./use-motion-budget";
+import glass from "./glass-button.module.css";
 
 // Each of these pulls in a WebGL stack (three.js, Paper's shader mount, an SVG
 // displacement pipeline). None of them may block the headline, so all three are
@@ -93,7 +94,7 @@ export default function Landing({ error }: { error?: string | null }) {
           />
           <Link
             href="/methodology"
-            className="text-[13px] text-muted transition-colors hover:text-text"
+            className={`${glass.glass} inline-flex h-10 items-center rounded-full bg-white/10 px-4 text-[13px] text-muted transition-colors hover:bg-white/[0.18] hover:text-text`}
           >
             Methodology
           </Link>
@@ -139,7 +140,7 @@ export default function Landing({ error }: { error?: string | null }) {
             <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
               <a
                 href="/api/auth/login"
-                className="w-full rounded-full bg-text px-8 py-4 text-center text-[15px] font-semibold text-bg transition-transform active:scale-[0.98] sm:w-auto"
+                className={`${glass.glass} w-full rounded-full bg-white/[0.14] px-8 py-4 text-center text-[15px] font-semibold text-text transition-[background-color,transform] duration-300 hover:bg-white/[0.24] active:scale-[0.98] sm:w-auto`}
               >
                 Sign in with WHOOP
               </a>
