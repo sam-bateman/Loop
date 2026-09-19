@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "brand": "node scripts/brand/generate.mjs"
+    "brand": "node scripts/brand/generate.mjs",
+    "genome:unpack": "gunzip -kf demo-data/corpasome.txt.gz"
   },
   "dependencies": {
     "iron-session": "^9.0.1",
