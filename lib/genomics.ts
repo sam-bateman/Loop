@@ -137,8 +137,8 @@ function buildInsights(b: ClawbioBundle): Insight[] {
   for (const d of b.pharma.drugs.avoid) {
     out.push({
       kind: "drug",
-      headline: `${d.drug} — avoid or use an alternative`,
-      detail: `Your ${d.gene.replace("+", " and ")} genotype changes how you handle ${d.drug.toLowerCase()} (${d.brand}, a ${d.class.toLowerCase()}). If it is ever prescribed, tell the prescriber before you take it.`,
+      headline: `${d.drug} — confirm this result before use`,
+      detail: `Your ${d.gene.replace("+", " and ")} result may affect how you handle ${d.drug.toLowerCase()} (${d.brand}, ${article(d.class)} ${d.class.toLowerCase()}). If it is ever prescribed, show this report to the prescriber or pharmacist and ask them to confirm it before making a treatment decision.`,
       genes: d.gene.split("+"),
       severity: "high",
     });
@@ -152,7 +152,7 @@ function buildInsights(b: ClawbioBundle): Insight[] {
     const phenotype = b.pharma.genes[gene]?.phenotype;
     out.push({
       kind: "drug",
-      headline: `${drugs.length} drug${drugs.length === 1 ? "" : "s"} need dose care — ${gene}`,
+      headline: `${drugs.length} drug${drugs.length === 1 ? " needs" : "s need"} dose care — ${gene}`,
       detail: `You are ${phenotype ? `${article(phenotype)} ${phenotype.toLowerCase()}` : "atypical"} for ${gene}, which affects ${drugs
         .slice(0, 3)
         .map((d) => d.drug.toLowerCase())

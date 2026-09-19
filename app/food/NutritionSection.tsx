@@ -58,11 +58,14 @@ export function NutritionSection({ targets }: { targets: DailyTargets }) {
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number>(0);
 
-  const refresh = useCallback(async () => {
-    const [log, bookmarks] = await Promise.all([entriesForDay(), allSavedMeals()]);
-    setEntries(log);
-    setSaved(bookmarks);
-  }, []);
+  const refresh = useCallback(
+    () =>
+      Promise.all([entriesForDay(), allSavedMeals()]).then(([log, bookmarks]) => {
+        setEntries(log);
+        setSaved(bookmarks);
+      }),
+    []
+  );
 
   /** Re-read, then tell DayNutrition's bars to do the same. */
   const commit = useCallback(async () => {

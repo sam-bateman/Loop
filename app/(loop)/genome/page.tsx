@@ -1,97 +1,159 @@
 import AppFrame from "@/components/loop/AppFrame";
-import ConfidenceBand from "@/components/loop/ConfidenceBand";
+import RoutineLog from "@/components/loop/RoutineLog";
+import { loadDemoGenome, type Insight } from "@/lib/genomics";
 
-export const metadata = { title: "Loop — Genome" };
+export const metadata = { title: "Loop — Genetics" };
 
-/**
- * UI_SPEC.md §10.3 — Genome, post-upload: PRS confidence bands stacked with
- * --s5 gaps, then the variant table beneath a --t-label header, then inferred
- * ancestry with its portability note in --neutral at --t-body — in the layout,
- * at full size, not as a footnote.
- *
- * ⚠️ Nothing behind this screen is built. SCOPE.md §5 defers the genomics tier
- * until the WHOOP loop works, and DESIGN_SPEC.md §4.2 flags swabio as a
- * contract rather than an integration. This is the visual target only.
- */
-const VARIANTS = [
-  { rsid: "rs4961", gene: "ADD1", genotype: "GG", effect: "Salt-sensitive", mult: "×1.30" },
-  { rsid: "rs1801133", gene: "MTHFR", genotype: "CT", effect: "Reduced folate metabolism", mult: "×1.10" },
-  { rsid: "rs762551", gene: "CYP1A2", genotype: "AA", effect: "Fast caffeine metaboliser", mult: "×0.90" },
-  { rsid: "rs429358", gene: "APOE", genotype: null, effect: "Not assayed on your chip", mult: null },
-  { rsid: "rs671", gene: "ALDH2", genotype: null, effect: "Not assayed on your chip", mult: null },
-];
+function plainTitle(insight: Insight) {
+  const title = insight.headline.toLowerCase();
+  if (title.startsWith("omega-3")) return "Prioritize omega-3 foods";
+  if (title.startsWith("carbohydrate")) return "Build meals around slow carbs";
+  if (title.startsWith("antioxidant")) return "Get antioxidants from food";
+  return insight.headline.replace(/ — .*genetic risk/i, "");
+}
 
-export default function Genome() {
+export default function GeneticsPage() {
+  const genome = loadDemoGenome();
+
+  if (!genome) {
+    return (
+      <AppFrame>
+        <main className="screen genetics-screen">
+          <div className="screen-kicker">Genetics</div>
+          <h1 className="screen-title">No genetics report yet.</h1>
+          <p className="screen-intro">When a report is available, Loop will turn it into a short list of useful notes.</p>
+        </main>
+      </AppFrame>
+    );
+  }
+
+  const drugInsights = genome.insights.filter((item) => item.kind === "drug");
+  const foodInsights = genome.insights.filter((item) => item.kind === "supplement");
+  const habitInsights = genome.insights.filter((item) => item.kind === "habit");
+
   return (
     <AppFrame scroll>
-      <div className="screen">
-        <span className="label" style={{ display: "block", marginBottom: "var(--s5)" }}>
-          Genome
-        </span>
-
-        <div style={{ display: "grid", gap: "var(--s5)" }}>
-          <ConfidenceBand
-            condition="Coronary artery disease"
-            percentile={78}
-            ciLow={52}
-            ciHigh={94}
-            reduced
-            note="Your inferred ancestry is under-represented in the reference panel this score was trained on."
-          />
-          <ConfidenceBand
-            condition="Type 2 diabetes"
-            percentile={41}
-            ciLow={33}
-            ciHigh={49}
-          />
+      <main className="screen genetics-screen">
+        <div className="genetics-heading">
+          <div>
+            <div className="screen-kicker">Genetics</div>
+            <h1 className="screen-title">What matters for you.</h1>
+          </div>
+          <span className="demo-chip">Demo report</span>
         </div>
+        <p className="screen-intro">
+          No research dashboard. Just the medication notes, food priorities and habits
+          worth knowing about.
+        </p>
 
-        <span
-          className="label"
-          style={{ display: "block", margin: "var(--s7) 0 var(--s3)" }}
-        >
-          Variants scored
-        </span>
+        <section className="important-card">
+          <span className="important-icon" aria-hidden="true">!</span>
+          <div>
+            <span className="card-eyebrow">Most important</span>
+            <h2>{genome.drugCounts.avoid} medication needs special care</h2>
+            <p>
+              This report also flags {genome.drugCounts.caution} medications where dose
+              or monitoring may need adjustment. Show these notes to the prescriber or pharmacist.
+            </p>
+          </div>
+        </section>
 
-        <div>
-          {VARIANTS.map((v) => (
-            /* §9.7 — not-assayed rows render at 45% with —— in the genotype
-               column. Never omitted silently: the absence is information. */
-            <div key={v.rsid} className="variant-row" data-absent={!v.genotype || undefined}>
-              <span className="micro variant-rsid">{v.rsid}</span>
-              <span className="variant-gene">{v.gene}</span>
-              <span className="mono variant-genotype">{v.genotype ?? "——"}</span>
-              <span className="variant-effect">{v.effect}</span>
-              <span className="mono variant-mult">{v.mult ?? ""}</span>
+        <section className="genetics-section">
+          <div className="section-copy">
+            <span className="card-eyebrow">Medication</span>
+            <h2>Bring these up before taking them</h2>
+          </div>
+          <div className="advice-list">
+            {drugInsights.map((item) => (
+              <article className={`advice-card severity-${item.severity}`} key={item.headline}>
+                <div className="advice-mark" aria-hidden="true" />
+                <div>
+                  <h3>{item.headline}</h3>
+                  <p>{item.detail}</p>
+                  <span className="evidence-tag">Based on {item.genes.join(" + ")}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <RoutineLog avoid={genome.drugs.avoid.map((drug) => drug.drug)} caution={genome.drugs.caution.map((drug) => drug.drug)} />
+
+        <section className="genetics-section">
+          <div className="section-copy">
+            <span className="card-eyebrow">Food first</span>
+            <h2>What to eat more often</h2>
+            <p>These are meal priorities, not proof that you have a deficiency.</p>
+          </div>
+          <div className="advice-list">
+            {foodInsights.map((item) => (
+              <article className="advice-card food-advice" key={item.headline}>
+                <div className="advice-mark" aria-hidden="true" />
+                <div>
+                  <h3>{plainTitle(item)}</h3>
+                  <p>{item.detail}</p>
+                  <span className="evidence-tag">Genetic clue · {item.genes.join(" + ")}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+          <a className="food-link" href="/food">See power meals and ingredients <span>→</span></a>
+        </section>
+
+        {habitInsights.length > 0 && (
+          <section className="genetics-section">
+            <div className="section-copy">
+              <span className="card-eyebrow">Daily habits</span>
+              <h2>Small things to watch</h2>
             </div>
-          ))}
-        </div>
+            <div className="advice-list">
+              {habitInsights.map((item) => (
+                <article className="advice-card habit-advice" key={item.headline}>
+                  <div className="advice-mark" aria-hidden="true" />
+                  <div><h3>{item.headline}</h3><p>{item.detail}</p></div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
 
-        <span
-          className="label"
-          style={{ display: "block", margin: "var(--s7) 0 var(--s3)" }}
-        >
-          Inferred ancestry
-        </span>
-        <p style={{ color: "var(--bone)", fontSize: "var(--t-body)", margin: "0 0 var(--s3)" }}>
-          72% Northern European · 18% South Asian · 10% unassigned
-        </p>
-        <p className="portability-note">
-          Polygenic scores are relative percentiles within an ancestry group, not
-          verdicts. They are calibrated on predominantly European reference panels and
-          transfer poorly across ancestries, so the coronary artery disease score above
-          is less reliable for you than its number suggests. Most consumer genetics
-          products do not tell you this.
-        </p>
+        <section className="supplement-note">
+          <span aria-hidden="true">✦</span>
+          <div>
+            <h2>Should you add a supplement?</h2>
+            <p>
+              Not from genetics alone. Start with food. If you are considering a supplement,
+              confirm the need with the appropriate blood test or a clinician first—especially
+              when you also take medication.
+            </p>
+          </div>
+        </section>
 
-        <button className="danger-button" type="button">
-          Delete genetic data
-        </button>
-        <p className="micro" style={{ textTransform: "none", marginTop: "var(--s3)" }}>
-          The raw file was never written to disk. Deleting removes the scored variants
-          too, and cannot be undone.
+        <details className="technical-details">
+          <summary>See the technical evidence</summary>
+          <div className="technical-body">
+            <p>
+              These details help a clinician check the report. They are not diagnoses and do not
+              belong in the main experience.
+            </p>
+            <h3>Pharmacogenetic results</h3>
+            {genome.genes.map((gene) => (
+              <div className="technical-row" key={gene.gene}>
+                <b>{gene.gene}</b><span>{gene.diplotype}</span><small>{gene.phenotype}</small>
+              </div>
+            ))}
+            <h3>Illustrative risk scores</h3>
+            {genome.riskScores.map((risk) => (
+              <div className="technical-row" key={risk.trait}>
+                <b>{risk.trait}</b><span>{risk.percentile}th percentile</span><small>{risk.coverage}</small>
+              </div>
+            ))}
+          </div>
+        </details>
+        <p className="medical-footnote">
+          Demo data only. Loop does not diagnose conditions or replace your doctor or pharmacist.
         </p>
-      </div>
+      </main>
     </AppFrame>
   );
 }

@@ -2,7 +2,7 @@
 
 /** Shared presentation helpers for the nutrition island. */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import type { FoodScore } from "@/lib/food-scoring";
 
 export function signed(n: number) {
@@ -22,16 +22,8 @@ export function shortTime(iso: string) {
  * revoke it — otherwise a long session leaks every thumbnail it has ever shown.
  */
 export function useObjectUrl(blob?: Blob): string | undefined {
-  const [url, setUrl] = useState<string>();
-  useEffect(() => {
-    if (!blob) {
-      setUrl(undefined);
-      return;
-    }
-    const next = URL.createObjectURL(blob);
-    setUrl(next);
-    return () => URL.revokeObjectURL(next);
-  }, [blob]);
+  const url = useMemo(() => (blob ? URL.createObjectURL(blob) : undefined), [blob]);
+  useEffect(() => (url ? () => URL.revokeObjectURL(url) : undefined), [url]);
   return url;
 }
 
@@ -63,6 +55,7 @@ export function Thumb({
   fallbackClassName: string;
 }) {
   const url = useObjectUrl(blob);
+  // eslint-disable-next-line @next/next/no-img-element -- object URL, nothing for the optimizer to do
   if (url) return <img src={url} alt="" className={className} />;
   return (
     <div className={fallbackClassName} aria-hidden="true">

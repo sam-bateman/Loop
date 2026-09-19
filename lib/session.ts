@@ -16,13 +16,6 @@ export type LoopSession = {
   /** Filled from WHOOP at onboarding — Mifflin-St Jeor needs it, and no screen asks for it. */
   heightCm?: number;
   onboarded?: boolean;
-  /** Today's logged meals. Cookie-sized, so app/api/meals caps the list. */
-  meals?: {
-    day: string;
-    at: string;
-    nutrition: import("./food-scoring").Nutrition;
-    minutes: number;
-  }[];
 };
 
 export const sessionOptions: SessionOptions = {
