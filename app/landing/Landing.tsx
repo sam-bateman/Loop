@@ -54,7 +54,13 @@ const SIGNALS = [
   },
 ] as const;
 
-export default function Landing({ error }: { error?: string | null }) {
+export default function Landing({
+  error,
+  signedIn = false,
+}: {
+  error?: string | null;
+  signedIn?: boolean;
+}) {
   const { ambient, lens } = useMotionBudget();
   const [backdropIn, setBackdropIn] = useState(false);
 
@@ -139,14 +145,15 @@ export default function Landing({ error }: { error?: string | null }) {
 
             <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
               <a
-                href="/api/auth/login"
+                href={signedIn ? "/dashboard" : "/api/auth/login"}
                 className={`${glass.glass} w-full rounded-full bg-white/[0.14] px-8 py-4 text-center text-[15px] font-semibold text-text transition-[background-color,transform] duration-300 hover:bg-white/[0.24] active:scale-[0.98] sm:w-auto`}
               >
-                Sign in with WHOOP
+                {signedIn ? "Open Loop →" : "Sign in with WHOOP"}
               </a>
               <p className="max-w-[34ch] text-[12.5px] leading-relaxed text-faint">
-                Read-only. Your tokens stay in an encrypted cookie on your device — Loop
-                stores nothing on a server.
+                {signedIn
+                  ? "WHOOP is connected. Your tokens stay in an encrypted cookie on your device — Loop stores nothing on a server."
+                  : "Read-only. Your tokens stay in an encrypted cookie on your device — Loop stores nothing on a server."}
               </p>
             </div>
           </section>
