@@ -1,4 +1,4 @@
-# Whoopy Time — Design Specification
+# Loop — Design Specification
 
 **Version:** 0.1 (draft)
 **Status:** For review. Nothing here is built yet.
@@ -8,7 +8,7 @@
 
 ## 0. One sentence
 
-**Whoopy Time turns your WHOOP data and your consumer genome into a single live number: the minutes of life you have added or lost today.**
+**Loop turns your WHOOP data and your consumer genome into a single live number: the minutes of life you have added or lost today.**
 
 ---
 
@@ -16,7 +16,7 @@
 
 Health apps report *proxies* — a recovery percentage, a strain number, a ring that closes. Proxies require the user to already believe the proxy matters.
 
-Whoopy Time reports the thing the proxy is a proxy *for*. One unit, one direction, one scale: **minutes**. A cigarette is −11 minutes. Forty minutes in Zone 2 is +3 hours and 50 minutes. Five hours of sleep is −30 minutes. Everything is denominated the same way, so everything is comparable, and the comparison is the product.
+Loop reports the thing the proxy is a proxy *for*. One unit, one direction, one scale: **minutes**. A cigarette is −11 minutes. Forty minutes in Zone 2 is +3 hours and 50 minutes. Five hours of sleep is −30 minutes. Everything is denominated the same way, so everything is comparable, and the comparison is the product.
 
 The genome is what makes the number *yours* rather than the population's. Two people eat the same steak; the one carrying a salt-sensitivity variant and an elevated cardiovascular polygenic score pays more for it. Without genetics, this is a well-designed calculator. With it, it is a personal instrument.
 
@@ -30,7 +30,7 @@ Stated plainly, and stated in-product (see §11):
 
 ### Positioning against the field
 
-| | WHOOP | InsideTracker | Nutrisense | **Whoopy Time** |
+| | WHOOP | InsideTracker | Nutrisense | **Loop** |
 |---|---|---|---|---|
 | Unit | Strain / Recovery % | Biomarker ranges | Glucose mg/dL | **Minutes of life** |
 | Genome | No | Partial (DNA add-on) | No | **Core input** |
@@ -132,7 +132,7 @@ WHOOP Developer Platform, OAuth 2.0 authorization code flow.
 
 ### 4.2 swabio — genome ingestion
 
-> **Assumption flagged.** `swabio` is not present in this repository or reachable from this workspace. This section specifies the **contract Whoopy Time requires**, so the integration is defined regardless of what swabio's current API looks like. If swabio already does more than this, we use more of it; if less, this is the gap list.
+> **Assumption flagged.** `swabio` is not present in this repository or reachable from this workspace. This section specifies the **contract Loop requires**, so the integration is defined regardless of what swabio's current API looks like. If swabio already does more than this, we use more of it; if less, this is the gap list.
 
 **Input:** a 23andMe or AncestryDNA raw data export. Tab-separated, comment-prefixed header, one row per assayed marker:
 
@@ -371,8 +371,8 @@ Chosen for a weekend build with a live demo at the end. Boring where boring is c
 └───────────────┬─────────────────────────────────────────┘
                 │
 ┌───────────────▼─────────────────────────────────────────┐
-│  @whoopy/engine   pure TS, zero deps, 100% unit-tested  │
-│  @whoopy/genome   parser + PRS + ancestry               │
+│  @loop/engine     pure TS, zero deps, 100% unit-tested  │
+│  @loop/genome     parser + PRS + ancestry               │
 └───────────────┬─────────────────────────────────────────┘
                 │
 ┌───────────────▼─────────────────────────────────────────┐
@@ -623,7 +623,7 @@ The dependency chain is: engine → data → visualisation. But the **visualisat
 
 | Phase | Work | Gate |
 |---|---|---|
-| 1 | `@whoopy/engine` scaffolding + food layer ported from METHODOLOGY.md + fixture tests | Engine scores a known day correctly |
+| 1 | `@loop/engine` scaffolding + food layer ported from METHODOLOGY.md + fixture tests | Engine scores a known day correctly |
 | 2 | WHOOP OAuth + sync + sleep/movement factors (§5.2–5.3) | Real WHOOP data produces a real number |
 | 3 | **The Organism against fixture data** (parallel with 2) | It breathes |
 | 4 | Genome parse + single-variant modifiers (§5.4.1) | An rsID changes a score |
