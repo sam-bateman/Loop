@@ -47,3 +47,4 @@ node_modules
 # ClawBio venv and uncompressed genome (regenerate with `npm run genome:unpack`)
 .venv-clawbio
 demo-data/*.txt
+demo-data/.clawbio-tmp

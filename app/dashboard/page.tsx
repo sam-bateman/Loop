@@ -2,7 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { accessToken, fetchAll } from "@/lib/whoop";
+import { getSession } from "@/lib/session";
 import { scoreDays, summarize, type DayScore, type Factor } from "@/lib/scoring";
+import { loadDemoGenome } from "@/lib/genomics";
+import { GenomicsCard } from "./GenomicsCard";
 
 export const dynamic = "force-dynamic";
 
@@ -80,13 +83,18 @@ export default async function Dashboard() {
     );
   }
 
-  const days = scoreDays(data);
+  const session = await getSession();
+  const days = scoreDays(data, { age: session.age });
   const s = summarize(days);
   const today = days.find((d) => d.factors.length > 0);
-  const name = data.profile?.first_name;
+  const name = session.name ?? data.profile?.first_name;
 
   const bestDay = [...days].sort((a, b) => b.minutes - a.minutes)[0];
   const worstDay = [...days].sort((a, b) => a.minutes - b.minutes)[0];
+
+  // Genomics is a fixed baseline, deliberately kept out of the daily number.
+  // METHODOLOGY-WHOOP.md §9.
+  const genome = loadDemoGenome();
 
   return (
     <main className="min-h-dvh px-6 py-8 max-w-lg mx-auto pb-16">
@@ -185,6 +193,8 @@ export default async function Dashboard() {
         </section>
       )}
 
+      {genome && <GenomicsCard g={genome} />}
+
       {/* Honesty box */}
       <section className="rounded-xl border border-line bg-surface-2 px-4 py-4 mb-8">
         <h3 className="text-[13px] font-semibold mb-2">What this number is, and isn&apos;t</h3>
@@ -192,8 +202,10 @@ export default async function Dashboard() {
           These are population-level estimates from observational cohort studies, applied to one
           person. None of the underlying associations are established as causal, the factors are
           summed even though the source cohorts overlap, and one modifier (strain vs. recovery) has
-          no mortality evidence behind it at all. Loop states its rates conservatively for exactly
-          this reason. It is not medical advice.
+          no mortality evidence behind it at all. The genetic baseline carries its own problems —
+          illustrative panels, a European reference population, and a liability model that is an
+          approximation. Loop states its rates conservatively for exactly this reason. It is not
+          medical advice.
         </p>
       </section>
 

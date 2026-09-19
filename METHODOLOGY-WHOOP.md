@@ -234,3 +234,97 @@ the first thing removed if the model is ever validated.
 10. Ekelund, U. et al. (2016). *The Lancet*, 388(10051):1302–1310.
 11. Fadnes, L.T. et al. (2022). *PLOS Medicine* — life-table modeling.
 12. Sheehan, C.M. et al. (2019). *Sleep*, 42(2):zsy221 — NHIS sleep duration trends.
+
+---
+
+## 9. Genomics tier (ClawBio) — a baseline, not a daily factor
+
+Loop reads a user's 23andMe/AncestryDNA file through [ClawBio](https://github.com/ClawBio/ClawBio)
+and converts polygenic risk scores into a **fixed shift in baseline life expectancy**.
+
+**Genetics never moves today's number.** The daily score in §2 is behaviour — the part
+you can change. A polygenic score is the starting line you were handed. Folding the two
+into one figure would tell a user their sleep was worse than it was, or better, for
+reasons they cannot act on. Loop displays them separately for that reason.
+
+### 9.1 The conversion
+
+Three steps, from PRS percentile to minutes per day.
+
+**Step 1 — percentile to disease relative risk.** Under a liability-threshold model,
+relative risk rises log-linearly with the PRS z-score:
+
+```
+RR = exp(β × z)
+```
+
+where β is the published per-standard-deviation log hazard ratio:
+
+| Trait | β (per SD) | Source |
+|---|---|---|
+| Coronary artery disease | ln(1.60) = 0.470 | Inouye et al. (2018), *JACC* 72:1883–1893; Khera et al. (2018) |
+| Type 2 diabetes | ln(1.50) = 0.405 | Khera et al. (2018), *Nature Genetics* 50:1219–1224 |
+
+**z is clamped to ±2.0.** ClawBio's bundled panels print "this is an illustrative
+ClawBio panel, not a PGS Catalog score", and their reference distributions are crude —
+the Corpasome scores at the 0.1st percentile on the 46-locus CAD panel, a z of −3.09,
+which a 46-variant panel cannot legitimately resolve. The clamp stops a coarse reference
+distribution from producing an extreme life-expectancy claim.
+
+**Step 2 — disease risk to all-cause mortality.** A doubled coronary risk is not a
+doubled risk of dying. It is weighted by how much of all-cause mortality that disease
+accounts for:
+
+```
+allCauseHR = 1 + share × (RR − 1)
+```
+
+| Trait | Share of all-cause mortality | Source |
+|---|---|---|
+| Coronary artery disease | 0.16 | GBD 2019, high-income countries |
+| Type 2 diabetes | 0.03 | GBD 2019 — direct deaths only; deliberately excludes attributable CVD, which the CAD term already carries |
+
+**Step 3 — all-cause hazard to minutes.** Same anchor as §2.1: a sustained all-cause
+HR of 1.12 costs roughly one microlife per day.
+
+```
+minutesPerDay = −((allCauseHR − 1) / 0.12) × 30 × 0.5
+```
+
+The trailing **×0.5 is a conservatism factor**, consistent with how §2.5 discounts the
+activity rate. It accounts for three compounding weaknesses: the panels are illustrative
+rather than validated, the liability-threshold model is an approximation, and PRS
+portability across ancestries is poor (§9.2).
+
+### 9.2 Ancestry portability — the limitation that matters most
+
+Polygenic scores are derived overwhelmingly from European-ancestry cohorts and
+**mis-calibrate badly outside that population** — typically losing more than half their
+predictive accuracy in African-ancestry individuals. ClawBio reports the reference
+population on every score (`EUR` for all bundled panels) and ships an `equity` skill
+(FST, heterozygosity, population representation) built to surface this.
+
+Loop shows the reference population next to every score. It is not a footnote: for a
+user whose ancestry does not match, the number is closer to noise than to signal, and
+the interface should say so rather than implying a precision that is not there.
+
+### 9.3 What is deliberately excluded
+
+- **Panels below 50% SNP overlap.** A 23andMe chip does not carry every variant in a
+  score. ClawBio refuses to score below half coverage and Loop reports the refusal
+  rather than scoring a partial panel. On the Corpasome this drops atrial fibrillation
+  (5/12) and BMI (42/97).
+- **`nutrigx` domains.** They score nutrition genetics — folate, omega-3, caffeine,
+  lactose — which belong with the food tier. Loop displays them as context and scores
+  none of them (see `CLAWBIO.md` §4).
+- **Methylation and proteomic clocks.** They need assays a consumer genotype file cannot
+  supply.
+
+### 9.4 References
+
+24. Khera, A.V. et al. (2018). "Genome-wide polygenic scores for common diseases identify individuals with risk equivalent to monogenic mutations." *Nature Genetics*, 50:1219–1224. [PubMed](https://pubmed.ncbi.nlm.nih.gov/30104762/)
+25. Inouye, M. et al. (2018). "Genomic risk prediction of coronary artery disease in 480,000 adults." *JACC*, 72(16):1883–1893. [PubMed](https://pubmed.ncbi.nlm.nih.gov/30309464/)
+26. Mars, N. et al. (2020). "Polygenic and clinical risk scores and their impact on age at onset and prediction of cardiometabolic diseases and common cancers." *Nature Medicine*, 26:549–557. [PubMed](https://pubmed.ncbi.nlm.nih.gov/32273609/)
+27. Martin, A.R. et al. (2019). "Clinical use of current polygenic risk scores may exacerbate health disparities." *Nature Genetics*, 51:584–591. [PubMed](https://pubmed.ncbi.nlm.nih.gov/30926966/)
+28. GBD 2019 Diseases and Injuries Collaborators. *The Lancet*, 396:1204–1222.
+29. Corpas, M. (2013). "Crowdsourcing the Corpasome." *Source Code for Biology and Medicine*, 8, 13.

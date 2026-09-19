@@ -8,6 +8,12 @@ export type LoopSession = {
   oauthState?: string;
   userId?: number;
   firstName?: string;
+  /** Answers collected in /onboarding while the WHOOP sync runs. */
+  name?: string;
+  age?: number;
+  sex?: "male" | "female" | "other";
+  weightLb?: number;
+  onboarded?: boolean;
 };
 
 export const sessionOptions: SessionOptions = {

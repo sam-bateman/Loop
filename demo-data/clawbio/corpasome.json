@@ -1,0 +1,257 @@
+{
+  "source": "Corpasome — Manuel Corpas 23andMe genotype, CC0 public domain",
+  "citation": "Corpas, M. (2013). Source Code for Biology and Medicine, 8, 13. doi:10.1186/1751-0473-8-13",
+  "generatedAt": "2026-09-19T18:26:16.017Z",
+  "clawbioVersion": "clawbio.py 0.7.1",
+  "totalVariants": 575539,
+  "prs": [
+    {
+      "panelId": "CLAWBIO-T2D-8",
+      "trait": "Type 2 diabetes",
+      "percentile": 78.8,
+      "category": "Elevated",
+      "zScore": 0.8,
+      "variantsUsed": 8,
+      "variantsTotal": 8,
+      "overlapFraction": 1,
+      "referencePopulation": "EUR",
+      "curatedDemoPanel": true
+    },
+    {
+      "panelId": "CLAWBIO-CAD-46",
+      "trait": "Coronary artery disease",
+      "percentile": 0.1,
+      "category": "Low",
+      "zScore": -3.071,
+      "variantsUsed": 24,
+      "variantsTotal": 46,
+      "overlapFraction": 0.5217391304347826,
+      "referencePopulation": "EUR",
+      "curatedDemoPanel": true
+    }
+  ],
+  "prsSkipped": [
+    "CLAWBIO-AF-12",
+    "CLAWBIO-BMI-97"
+  ],
+  "nutrition": {
+    "summary": {
+      "total_variants_loaded": 575539,
+      "panel_snps_tested": 20,
+      "panel_snps_missing": 8,
+      "panel_size": 28,
+      "elevated_domains": [
+        "omega3"
+      ],
+      "moderate_domains": [
+        "vitamin_b6",
+        "carbohydrate",
+        "antioxidant"
+      ],
+      "domains_assessed": 12
+    },
+    "domains": {
+      "folate": {
+        "score": 1.43,
+        "category": "Low",
+        "coverage": "3/3 SNPs tested",
+        "snps": [
+          {
+            "rsid": "rs1801133",
+            "gene": "MTHFR",
+            "genotype": "CC",
+            "effect": "decreased_folate_conversion"
+          },
+          {
+            "rsid": "rs1801131",
+            "gene": "MTHFR",
+            "genotype": "CA",
+            "effect": "decreased_folate_conversion"
+          },
+          {
+            "rsid": "rs1805087",
+            "gene": "MTR",
+            "genotype": "AA",
+            "effect": "increased_homocysteine_risk"
+          }
+        ]
+      },
+      "vitamin_d": {
+        "score": null,
+        "category": "Unknown",
+        "coverage": "0/3 SNPs tested",
+        "snps": []
+      },
+      "omega3": {
+        "score": 7.14,
+        "category": "Elevated",
+        "coverage": "3/4 SNPs tested",
+        "snps": [
+          {
+            "rsid": "rs174546",
+            "gene": "FADS1",
+            "genotype": "CC",
+            "effect": "decreased_lc_pufa_synthesis"
+          },
+          {
+            "rsid": "rs1535",
+            "gene": "FADS2",
+            "genotype": "AA",
+            "effect": "altered_omega6_omega3_ratio"
+          },
+          {
+            "rsid": "rs953413",
+            "gene": "ELOVL2",
+            "genotype": "GG",
+            "effect": "lower_epa_to_dha_conversion"
+          }
+        ]
+      },
+      "vitamin_a": {
+        "score": null,
+        "category": "Unknown",
+        "coverage": "0/2 SNPs tested",
+        "snps": []
+      },
+      "vitamin_c": {
+        "score": null,
+        "category": "Unknown",
+        "coverage": "0/1 SNPs tested",
+        "snps": []
+      },
+      "vitamin_b6": {
+        "score": 5,
+        "category": "Moderate",
+        "coverage": "1/1 SNPs tested",
+        "snps": [
+          {
+            "rsid": "rs1256335",
+            "gene": "ALPL",
+            "genotype": "TC",
+            "effect": "decreased_b6_utilisation"
+          }
+        ]
+      },
+      "carbohydrate": {
+        "score": 5,
+        "category": "Moderate",
+        "coverage": "2/2 SNPs tested",
+        "snps": [
+          {
+            "rsid": "rs9939609",
+            "gene": "FTO",
+            "genotype": "AT",
+            "effect": "increased_fat_mass_energy_dysregulation"
+          },
+          {
+            "rsid": "rs7903146",
+            "gene": "TCF7L2",
+            "genotype": "CT",
+            "effect": "impaired_carbohydrate_metabolism"
+          }
+        ]
+      },
+      "fat_metabolism": {
+        "score": 3.43,
+        "category": "Low",
+        "coverage": "3/3 SNPs tested",
+        "snps": [
+          {
+            "rsid": "rs1801282",
+            "gene": "PPARG",
+            "genotype": "CG",
+            "effect": "reduced_fat_oxidation"
+          },
+          {
+            "rsid": "rs662799",
+            "gene": "APOA5",
+            "genotype": "TC",
+            "effect": "elevated_triglycerides_on_fat"
+          },
+          {
+            "rsid": "rs7412",
+            "gene": "APOE",
+            "genotype": "CC",
+            "effect": "apoe_epsilon2_lower_ldl"
+          }
+        ]
+      },
+      "caffeine": {
+        "score": 0,
+        "category": "Low",
+        "coverage": "2/2 SNPs tested",
+        "snps": [
+          {
+            "rsid": "rs762551",
+            "gene": "CYP1A2",
+            "genotype": "AA",
+            "effect": "slow_caffeine_metabolism"
+          },
+          {
+            "rsid": "rs4410790",
+            "gene": "AHR",
+            "genotype": "CC",
+            "effect": "reduced_cyp1a2_induction"
+          }
+        ]
+      },
+      "alcohol": {
+        "score": 0,
+        "category": "Low",
+        "coverage": "2/2 SNPs tested",
+        "snps": [
+          {
+            "rsid": "rs1229984",
+            "gene": "ADH1B",
+            "genotype": "GG",
+            "effect": "altered_acetaldehyde_accumulation"
+          },
+          {
+            "rsid": "rs671",
+            "gene": "ALDH2",
+            "genotype": "GG",
+            "effect": "impaired_acetaldehyde_clearance"
+          }
+        ]
+      },
+      "lactose": {
+        "score": 0,
+        "category": "Low",
+        "coverage": "1/1 SNPs tested",
+        "snps": [
+          {
+            "rsid": "rs4988235",
+            "gene": "MCM6",
+            "genotype": "AG",
+            "effect": "lactase_non_persistence"
+          }
+        ]
+      },
+      "antioxidant": {
+        "score": 4.53,
+        "category": "Moderate",
+        "coverage": "3/4 SNPs tested",
+        "snps": [
+          {
+            "rsid": "rs4880",
+            "gene": "SOD2",
+            "genotype": "TC",
+            "effect": "decreased_mitochondrial_antioxidant"
+          },
+          {
+            "rsid": "rs1800566",
+            "gene": "NQO1",
+            "genotype": "CC",
+            "effect": "decreased_coq10_regeneration"
+          },
+          {
+            "rsid": "rs4680",
+            "gene": "COMT",
+            "genotype": "AA",
+            "effect": "altered_methylation_catechol_metabolism"
+          }
+        ]
+      }
+    }
+  }
+}
