@@ -17,6 +17,7 @@ const GREEN = { r: 0x40, g: 0xf8, b: 0x30 };
 const BLACK = { r: 10, g: 10, b: 11 }; // matches --bg in globals.css
 
 const GLOW_FLOOR = 0.10; // alpha below this is halo, not ink
+const CORNER = 0.11; // icon corner radius, as a fraction of the icon's edge
 
 /** Rebuild as premultiplied-clean RGBA: flat brand green, alpha from the green channel. */
 async function toAlpha(input) {
@@ -53,6 +54,23 @@ async function inkBox(img, x0 = 0, x1 = Infinity) {
 }
 
 /** Centre `img` on a square canvas of `size`, scaled to `inset` of the width. */
+/**
+ * Clip a square icon to a rounded rectangle. The corners become transparent, so
+ * the tile reads as a card on whatever background the host draws — WHOOP's
+ * consent screen puts it on light grey, where a hard-cornered black square looks
+ * like a crop artifact rather than a logo.
+ */
+async function roundCorners(img, size, ratio = CORNER) {
+  const r = Math.round(size * ratio);
+  const mask = Buffer.from(
+    `<svg width="${size}" height="${size}">` +
+      `<rect width="${size}" height="${size}" rx="${r}" ry="${r}" fill="#fff"/>` +
+      `</svg>`,
+  );
+  const buf = await img.png().toBuffer();
+  return sharp(buf).composite([{ input: mask, blend: "dest-in" }]);
+}
+
 async function square(img, size, inset, background) {
   const meta = await img.metadata();
   const target = Math.round(size * inset);
@@ -87,7 +105,7 @@ const markBuf = await sharp(flatBuf).extract(markBox).png().toBuffer();
 // infinity symbol and loses the name entirely, which is the whole point of a
 // pairing logo sitting next to the WHOOP mark on the consent screen. ---
 for (const size of [1024, 512, 180]) {
-  const icon = await square(sharp(wordmarkBuf), size, 0.84, BLACK);
+  const icon = await roundCorners(await square(sharp(wordmarkBuf), size, 0.84, BLACK), size);
   await icon.png({ compressionLevel: 9 }).toFile(`${OUT}/loop-icon-${size}.png`);
 }
 
@@ -97,7 +115,7 @@ await onBlack.png({ compressionLevel: 9 }).toFile(`${OUT}/loop-wordmark-black.pn
 
 // --- The mark alone, squared. Kept for places too small for four letters. ---
 for (const size of [512, 180]) {
-  const icon = await square(sharp(markBuf), size, 0.62, BLACK);
+  const icon = await roundCorners(await square(sharp(markBuf), size, 0.62, BLACK), size);
   await icon.png({ compressionLevel: 9 }).toFile(`${OUT}/loop-markicon-${size}.png`);
 }
 

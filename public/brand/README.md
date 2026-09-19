@@ -20,7 +20,7 @@ generator.
 | `loop-wordmark.png` | Primary wordmark, transparent background |
 | `loop-wordmark-black.png` | Wordmark on Loop black, 1024² — decks, social |
 | `loop-mark.png` | The infinity mark alone, transparent |
-| `loop-icon-1024.png` | **App icon** — the full wordmark. Uploaded to WHOOP |
+| `loop-icon-1024.png` | **App icon** — the full wordmark on a rounded black tile. Uploaded to WHOOP |
 | `loop-icon-512.png` / `-180.png` | Smaller icon sizes |
 | `loop-markicon-512.png` / `-180.png` | Mark-only square, for spots too small for four letters |
 | `loop-wordmark.jpg` | Source of truth — do not edit derived files by hand |
@@ -50,3 +50,9 @@ user is deciding whether to trust us with their data. `loop` stays legible down 
 180px, which is the smallest size WHOOP renders. The mark-only squares
 (`loop-markicon-*.png`) exist for anywhere genuinely too small for four letters; the
 32px favicon is the only place currently using one.
+
+**The icon tiles have rounded corners** (11% of the edge), and the area outside the
+radius is transparent. WHOOP's consent screen draws the app icon on light grey, where a
+hard-cornered black square reads as a crop artifact rather than a logo. `app/icon.png`
+and `app/apple-icon.png` stay square — iOS applies its own mask to a touch icon, and
+rounding ours would double-round it.
