@@ -31,9 +31,28 @@ if (!existsSync(CLAWBIO)) {
 const run = (args) =>
   execFileSync(PYTHON, args, { cwd: CLAWBIO, stdio: ["ignore", "pipe", "pipe"] }).toString();
 
-// --- nutrigx: 12 nutrition domains ---
+// --- nutrigx: 12 nutrition domains, each with a written recommendation ---
 run(["clawbio.py", "run", "nutrigx", "--input", GENOME, "--output", `${TMP}/nutrigx`]);
 const nutrigx = JSON.parse(readFileSync(`${TMP}/nutrigx/result.json`, "utf8"));
+
+// The per-domain recommendation text only exists in the markdown report, not the JSON.
+// Pull it out so the UI can show ClawBio's own wording rather than ours — theirs is
+// carefully hedged and we should not paraphrase medical guidance.
+const nutrigxMd = readFileSync(`${TMP}/nutrigx/nutrigx_report.md`, "utf8");
+const recommendations = {};
+for (const block of nutrigxMd.split(/^### /m).slice(1)) {
+  const title = block.split("\n")[0].trim();
+  const m = block.match(/\*\*Recommendation\*\*\s*\n+>\s*([\s\S]*?)(?:\n\n|\n---)/);
+  if (m) recommendations[title] = m[1].replace(/\n>\s?/g, " ").trim();
+}
+
+// --- pharmgx: drug dosing from CPIC guidelines ---
+// NOTE: run against ClawBio's pre-extracted PGx subset (--demo), not the raw 23andMe
+// file. Parsing the full Corpasome leaves all 13 genes with unmapped diplotypes and
+// every drug "insufficient data" — a ClawBio bug worth reporting upstream. The --demo
+// subset is the same person's genotype, so the result is still Corpas's.
+run(["clawbio.py", "run", "pharmgx", "--demo", "--output", `${TMP}/pharmgx`]);
+const pharmgx = JSON.parse(readFileSync(`${TMP}/pharmgx/result.json`, "utf8"));
 
 // --- PRS: one call per panel. Panels below the SNP-overlap threshold produce no
 // result file; that is a real outcome for a 23andMe chip and we record it. ---
@@ -71,6 +90,7 @@ const bundle = {
   prsSkipped: skipped,
   nutrition: {
     summary: nutrigx.summary,
+    recommendations,
     domains: Object.fromEntries(
       Object.entries(nutrigx.data.risk_scores).map(([k, v]) => [
         k,
@@ -88,9 +108,20 @@ const bundle = {
       ])
     ),
   },
+  pharma: {
+    summary: pharmgx.summary,
+    genes: pharmgx.data.gene_profiles,
+    drugs: {
+      avoid: pharmgx.data.drug_recommendations.avoid,
+      caution: pharmgx.data.drug_recommendations.caution,
+      standard: pharmgx.data.drug_recommendations.standard,
+    },
+  },
 };
 
 writeFileSync(OUT, JSON.stringify(bundle, null, 2));
 console.log(`wrote ${OUT}`);
 console.log(`  PRS scored: ${bundle.prs.map((p) => `${p.trait} ${p.percentile}%`).join(", ")}`);
 console.log(`  PRS skipped (insufficient SNP overlap): ${skipped.join(", ") || "none"}`);
+console.log(`  Drugs: ${bundle.pharma.summary.drugs_avoid} avoid, ${bundle.pharma.summary.drugs_caution} caution, ${bundle.pharma.summary.drugs_standard} standard`);
+console.log(`  Nutrition recommendations: ${Object.keys(recommendations).length}`);

@@ -5,7 +5,6 @@ import { accessToken, fetchAll } from "@/lib/whoop";
 import { getSession } from "@/lib/session";
 import { scoreDays, summarize, type DayScore, type Factor } from "@/lib/scoring";
 import { loadDemoGenome } from "@/lib/genomics";
-import { GenomicsCard } from "./GenomicsCard";
 import { FoodEntry } from "./FoodEntry";
 
 export const dynamic = "force-dynamic";
@@ -95,7 +94,15 @@ export default async function Dashboard() {
 
   // Genomics is a fixed baseline, deliberately kept out of the daily number.
   // METHODOLOGY-WHOOP.md §9.
+  // Genetics is not scored — it produces guidance, not minutes. See lib/genomics.ts.
   const genome = loadDemoGenome();
+  const g2 = genome
+    ? {
+        avoid: genome.drugCounts.avoid,
+        caution: genome.drugCounts.caution,
+        insights: genome.insights.length,
+      }
+    : null;
 
   // Food is scored on the same scale as the WHOOP factors and shares the day's total.
   // METHODOLOGY.md is its source of truth; lib/food-scoring.ts disables the exercise
@@ -220,7 +227,27 @@ export default async function Dashboard() {
         </section>
       )}
 
-      {genome && <GenomicsCard g={genome} />}
+      {g2 && (
+        <section className="mb-9">
+          <Link
+            href="/genetics"
+            className="block rounded-xl border border-line bg-surface px-4 py-3.5 active:scale-[0.99] transition-transform"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-[14px] font-medium mb-0.5">Your genome</div>
+                <div className="text-[12.5px] text-faint leading-snug">
+                  {g2.avoid > 0 && (
+                    <span className="text-loss">{g2.avoid} drug to avoid · </span>
+                  )}
+                  {g2.caution} need dose care · {g2.insights} insights
+                </div>
+              </div>
+              <span className="text-faint text-[18px] shrink-0">→</span>
+            </div>
+          </Link>
+        </section>
+      )}
 
       {/* Honesty box */}
       <section className="rounded-xl border border-line bg-surface-2 px-4 py-4 mb-8">
@@ -229,10 +256,8 @@ export default async function Dashboard() {
           These are population-level estimates from observational cohort studies, applied to one
           person. None of the underlying associations are established as causal, the factors are
           summed even though the source cohorts overlap, and one modifier (strain vs. recovery) has
-          no mortality evidence behind it at all. The genetic baseline carries its own problems —
-          illustrative panels, a European reference population, and a liability model that is an
-          approximation. Loop states its rates conservatively for exactly this reason. It is not
-          medical advice.
+          no mortality evidence behind it at all. Loop states its rates conservatively for exactly
+          this reason. It is not medical advice.
         </p>
       </section>
 

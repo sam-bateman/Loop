@@ -237,90 +237,70 @@ the first thing removed if the model is ever validated.
 
 ---
 
-## 9. Genomics tier (ClawBio) — a baseline, not a daily factor
+## 9. Genomics tier (ClawBio) — guidance, not a score
 
-Loop reads a user's 23andMe/AncestryDNA file through [ClawBio](https://github.com/ClawBio/ClawBio)
-and converts polygenic risk scores into a **fixed shift in baseline life expectancy**.
+**Loop does not score your genome.** An earlier version of this section converted
+polygenic risk scores into a "baseline life expectancy shift" in minutes per day. That
+was removed, deliberately, for three reasons:
 
-**Genetics never moves today's number.** The daily score in §2 is behaviour — the part
-you can change. A polygenic score is the starting line you were handed. Folding the two
-into one figure would tell a user their sleep was worse than it was, or better, for
-reasons they cannot act on. Loop displays them separately for that reason.
+1. **It was unactionable.** You cannot change your genome. A number attached to it gives
+   the user nothing to do, which is the opposite of what the rest of this document is
+   for.
+2. **It collided with the daily score.** Two numbers in the same unit, on the same
+   screen, meaning entirely different things, made both harder to read.
+3. **The inputs could not support it.** ClawBio labels its bundled panels "illustrative,
+   not a PGS Catalog score." Their reference distributions are coarse enough that the
+   demo genome lands at the 0.1st percentile on a 46-locus CAD panel — a resolution 46
+   variants cannot legitimately provide. Converting that into minutes of life would have
+   claimed a precision that does not exist.
 
-### 9.1 The conversion
+### 9.1 What the genome is used for instead
 
-Three steps, from PRS percentile to minutes per day.
+Three kinds of output, ranked by how well established the evidence is:
 
-**Step 1 — percentile to disease relative risk.** Under a liability-threshold model,
-relative risk rises log-linearly with the PRS z-score:
-
-```
-RR = exp(β × z)
-```
-
-where β is the published per-standard-deviation log hazard ratio:
-
-| Trait | β (per SD) | Source |
+| Output | Source | Evidence |
 |---|---|---|
-| Coronary artery disease | ln(1.60) = 0.470 | Inouye et al. (2018), *JACC* 72:1883–1893; Khera et al. (2018) |
-| Type 2 diabetes | ln(1.50) = 0.405 | Khera et al. (2018), *Nature Genetics* 50:1219–1224 |
+| **Medication guidance** | ClawBio `pharmgx` → [CPIC guidelines](https://cpicpgx.org/) | **Strongest.** Pharmacogenomics is used clinically; CPIC guidance is peer-reviewed and actively maintained |
+| **Nutrition and supplements** | ClawBio `nutrigx` | Moderate. Associations with blood biomarkers, not measured deficiencies |
+| **Habit weighting** | CYP1A2 caffeine, ADH1B/ALDH2 alcohol | Weak, and shown as context — it is *not* applied as a multiplier to the §2 factors |
 
-**z is clamped to ±2.0.** ClawBio's bundled panels print "this is an illustrative
-ClawBio panel, not a PGS Catalog score", and their reference distributions are crude —
-the Corpasome scores at the 0.1st percentile on the 46-locus CAD panel, a z of −3.09,
-which a 46-variant panel cannot legitimately resolve. The clamp stops a coarse reference
-distribution from producing an extreme life-expectancy claim.
+ClawBio's own recommendation text is shown verbatim rather than paraphrased. It is
+carefully hedged — the omega-3 entry, for instance, points out that a blood test is a
+better guide to need than a genotype — and rewriting someone else's medical guidance is
+how that nuance gets lost.
 
-**Step 2 — disease risk to all-cause mortality.** A doubled coronary risk is not a
-doubled risk of dying. It is weighted by how much of all-cause mortality that disease
-accounts for:
+### 9.2 Why habit weighting is displayed but not scored
 
-```
-allCauseHR = 1 + share × (RR − 1)
-```
+A slow CYP1A2 metaboliser really does clear caffeine more slowly, and that plausibly
+costs them sleep — which §2.1 scores directly. It is tempting to scale the sleep penalty
+accordingly. Loop does not, because there is no published rate for it: no study gives
+minutes of life lost per unit of caffeine per CYP1A2 genotype. Inventing one would
+violate the discipline the rest of this document runs on. The user is told the
+connection exists and left to act on it.
 
-| Trait | Share of all-cause mortality | Source |
-|---|---|---|
-| Coronary artery disease | 0.16 | GBD 2019, high-income countries |
-| Type 2 diabetes | 0.03 | GBD 2019 — direct deaths only; deliberately excludes attributable CVD, which the CAD term already carries |
+### 9.3 Disease risk scores
 
-**Step 3 — all-cause hazard to minutes.** Same anchor as §2.1: a sustained all-cause
-HR of 1.12 costs roughly one microlife per day.
+Still computed and displayed, as **percentiles with their coverage and reference
+population attached**, and explicitly not converted into any life-expectancy figure.
 
-```
-minutesPerDay = −((allCauseHR − 1) / 0.12) × 30 × 0.5
-```
+Two limitations are surfaced in the interface rather than buried:
 
-The trailing **×0.5 is a conservatism factor**, consistent with how §2.5 discounts the
-activity rate. It accounts for three compounding weaknesses: the panels are illustrative
-rather than validated, the liability-threshold model is an approximation, and PRS
-portability across ancestries is poor (§9.2).
+- **Panels below 50% SNP overlap are refused.** A 23andMe chip does not carry every
+  variant in a score. On the demo genome this drops atrial fibrillation (5/12) and BMI
+  (42/97). Loop reports the refusal instead of scoring a partial panel.
+- **Ancestry portability is poor.** These scores are derived overwhelmingly from
+  European-ancestry cohorts and lose much of their accuracy elsewhere. Every score shows
+  its reference population.
 
-### 9.2 Ancestry portability — the limitation that matters most
+### 9.4 A ClawBio bug worth reporting upstream
 
-Polygenic scores are derived overwhelmingly from European-ancestry cohorts and
-**mis-calibrate badly outside that population** — typically losing more than half their
-predictive accuracy in African-ancestry individuals. ClawBio reports the reference
-population on every score (`EUR` for all bundled panels) and ships an `equity` skill
-(FST, heterozygosity, population representation) built to surface this.
+Running `pharmgx` against the raw 576k-SNP 23andMe file finds 23 of 32 pharmacogenomic
+SNPs but leaves **all 13 genes with unmapped diplotypes**, so every drug returns
+"insufficient data". The same genotype via ClawBio's pre-extracted subset (`--demo`)
+maps cleanly and returns 1 avoid / 24 caution / 17 standard. The demo bundle uses the
+latter. The raw-file path needs fixing before real user uploads can work.
 
-Loop shows the reference population next to every score. It is not a footnote: for a
-user whose ancestry does not match, the number is closer to noise than to signal, and
-the interface should say so rather than implying a precision that is not there.
-
-### 9.3 What is deliberately excluded
-
-- **Panels below 50% SNP overlap.** A 23andMe chip does not carry every variant in a
-  score. ClawBio refuses to score below half coverage and Loop reports the refusal
-  rather than scoring a partial panel. On the Corpasome this drops atrial fibrillation
-  (5/12) and BMI (42/97).
-- **`nutrigx` domains.** They score nutrition genetics — folate, omega-3, caffeine,
-  lactose — which belong with the food tier. Loop displays them as context and scores
-  none of them (see `CLAWBIO.md` §4).
-- **Methylation and proteomic clocks.** They need assays a consumer genotype file cannot
-  supply.
-
-### 9.4 References
+### 9.5 References
 
 24. Khera, A.V. et al. (2018). "Genome-wide polygenic scores for common diseases identify individuals with risk equivalent to monogenic mutations." *Nature Genetics*, 50:1219–1224. [PubMed](https://pubmed.ncbi.nlm.nih.gov/30104762/)
 25. Inouye, M. et al. (2018). "Genomic risk prediction of coronary artery disease in 480,000 adults." *JACC*, 72(16):1883–1893. [PubMed](https://pubmed.ncbi.nlm.nih.gov/30309464/)
