@@ -159,14 +159,14 @@ export default function Onboarding({
       {step === "age" && (
         <Question title="How old are you?" hint="Loop scales every rate down with age — the same habit buys a younger body more time.">
           <Dial value={age} unit="years" caption={ageCaption(age)} />
-          <Ruler min={16} max={90} value={age} onChange={setAge} majorEvery={5} labelEvery={10} />
+          <Ruler min={16} max={90} value={age} onChange={setAge} majorEvery={5} labelEvery={10} label="Age in years" />
         </Question>
       )}
 
       {step === "weight" && (
         <Question title="And your weight?" hint="Used for context on training load. Nothing here is a target.">
           <Dial value={weight} unit="lb" caption={initialWeightLb ? "From your WHOOP profile" : "Drag to adjust"} />
-          <Ruler min={80} max={400} value={weight} onChange={setWeight} majorEvery={5} labelEvery={20} />
+          <Ruler min={80} max={400} value={weight} onChange={setWeight} majorEvery={5} labelEvery={20} label="Weight in pounds" />
         </Question>
       )}
 
