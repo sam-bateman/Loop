@@ -1,6 +1,7 @@
 /**
  * Food analysis — ported from Liv's api/analyze.js.
  *
+ * Runs on Gemini (the OpenAI and OpenRouter keys in keys.env are both expired).
  * Takes a photo, a text description, or both, and returns the nutrient fields
  * lib/food-scoring.ts needs. The prompt is Liv's, which has been tuned in production;
  * don't loosen the added-sugar or fruit/veg definitions without re-reading
@@ -33,8 +34,10 @@ const SYSTEM_PROMPT = `You analyze food and estimate nutritional content. Given 
 
 Be accurate with nutritional estimates. Use standard nutrition databases as reference. If you see packaging with nutrition info, use those values. If a previous estimate is provided alongside a correction, treat the correction as authoritative and re-estimate the full nutrition for the corrected food. Return ONLY the JSON object.`;
 
+const MODEL = "gemini-3.6-flash";
+
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "Server misconfigured — missing API key" }, { status: 500 });
   }
@@ -44,50 +47,44 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Provide an image, a description, or both" }, { status: 400 });
   }
 
-  const content: unknown[] = [];
+  const parts: unknown[] = [];
   if (description && base) {
-    content.push({
-      type: "text",
+    parts.push({
       text: `Previous estimate (treat as a baseline you may revise):\n${JSON.stringify(
         base
       )}\n\nUser correction or addition: "${description}"\n\nRe-estimate the full nutrition for the corrected food and return the JSON.`,
     });
   } else if (description) {
-    content.push({
-      type: "text",
-      text: `Identify and estimate the nutrition for the following food: "${description}"`,
-    });
+    parts.push({ text: `Identify and estimate the nutrition for the following food: "${description}"` });
   } else {
-    content.push({ type: "text", text: "Identify this food and estimate its nutrition." });
+    parts.push({ text: "Identify this food and estimate its nutrition." });
   }
 
   if (image) {
-    content.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${image}` } });
+    parts.push({ inline_data: { mime_type: "image/jpeg", data: image } });
   }
 
   try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 800,
-      }),
-    });
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [{ parts }],
+          generationConfig: { responseMimeType: "application/json", maxOutputTokens: 2000 },
+        }),
+      }
+    );
 
+    const data = await res.json();
     if (!res.ok) {
+      console.error("analyze upstream error", data?.error?.message);
       return NextResponse.json({ error: "Analysis failed upstream" }, { status: 502 });
     }
-    const data = await res.json();
-    const raw = data.choices?.[0]?.message?.content;
+
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!raw) return NextResponse.json({ error: "No analysis returned" }, { status: 502 });
 
     return NextResponse.json(JSON.parse(raw));
