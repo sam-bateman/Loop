@@ -2,7 +2,7 @@
 
 **Version:** 0.1 (draft)
 **Status:** For review. Nothing here is built yet.
-**Companion doc:** [`METHODOLOGY.md`](METHODOLOGY.md) — the evidence base for every minute this product awards or subtracts.
+**Companion docs:** [`UI_SPEC.md`](UI_SPEC.md) — the visual system · [`METHODOLOGY.md`](METHODOLOGY.md) — the evidence base for every minute this product awards or subtracts.
 
 ---
 
@@ -45,12 +45,12 @@ This is a hackathon build. The spec describes the full product, but flags what s
 
 ### In scope for v1 (demo)
 
-- Web application, rendered inside a phone frame (see §9.5). Desktop browser is the delivery surface; mobile is the design target.
+- Web application, rendered inside a phone frame (see `UI_SPEC.md` §6). Desktop browser is the delivery surface; mobile is the design target.
 - WHOOP OAuth + pull of sleep, recovery, workout, cycle, and body-measurement data.
 - Genome upload (23andMe / AncestryDNA raw export) → parse → variant extraction → **raw file destroyed** (§8).
 - Scoring engine covering sleep, movement, recovery, intake, and the genomic modifier layer.
 - Polygenic risk scores for a fixed panel of conditions, array-genotyped variants only (§5.4).
-- The Organism — the live centrepiece visualisation (§9.4).
+- The Organism — the live centrepiece visualisation (`UI_SPEC.md` §7).
 - Manual food logging via a short searchable list. No barcode scanning, no photo recognition.
 
 ### Out of scope for v1
@@ -104,7 +104,7 @@ Ledger entries are **immutable once written**. Corrections are reversing entries
 
 ### Why the separation matters
 
-It is the difference between "you have a 78th-percentile cardiovascular PRS" (baseline — nothing to do about it today) and "that was −30 minutes" (ledger — actionable now). Collapsing them into one number would make the product either fatalistic or dishonest. Visually, this maps directly onto the Organism: **core = Baseline, rings = Ledger** (§9.4).
+It is the difference between "you have a 78th-percentile cardiovascular PRS" (baseline — nothing to do about it today) and "that was −30 minutes" (ledger — actionable now). Collapsing them into one number would make the product either fatalistic or dishonest. Visually, this maps directly onto the Organism: **core = Baseline, rings = Ledger** (`UI_SPEC.md` §7).
 
 ---
 
@@ -319,7 +319,7 @@ Martin, A.R. et al. (2019), *Nature Genetics*, 51:584–91, "Clinical use of cur
 
 1. Ancestry must be inferred before any PRS is displayed (§4.2).
 2. Where an ancestry-matched reference distribution does not exist for a score, the product shows **reduced confidence explicitly** — a widened band and a plain-language note — or withholds the score.
-3. The confidence state is a **first-class visual state** in the design system (§9.3), not a tooltip.
+3. The confidence state is a **first-class visual state** in the design system (`UI_SPEC.md` §9.6), not a tooltip.
 
 ---
 
@@ -345,7 +345,7 @@ The order matters and must be fixed, because the multipliers compound.
 
 **Guard:** the product of all multipliers on any single event is clamped to **[0.4, 2.5]**. Without a clamp, a user who is female, high-BMI, salt-sensitive, high-CVD-PRS, sedentary and short-sleeping receives a compounded sodium penalty around 4× — a number the underlying studies cannot support. Every multiplier is estimated independently and they are not independent in reality.
 
-Every `ScoredEvent` carries a full **attribution trace** — the raw value and each multiplier applied, named. This drives the explain view (§10.4) and makes the engine debuggable.
+Every `ScoredEvent` carries a full **attribution trace** — the raw value and each multiplier applied, named. This drives the explain view (`UI_SPEC.md` §10.4) and makes the engine debuggable.
 
 ---
 
@@ -415,179 +415,42 @@ The user uploads 600,000 markers and we keep 250. This is both the correct engin
 
 ---
 
-## 9. Visual design system — "The Organism"
+## 9. Visual design
 
-### 9.1 The problem this design solves
+> **Moved to [`UI_SPEC.md`](UI_SPEC.md).** Tokens, typography, layout, the centrepiece geometry, motion, and every component spec now live there, so the look can be iterated without touching this document. This section keeps only the product-level rationale.
+
+### Why the visual design is a product problem, not a styling problem
 
 This app tells you how much life you have left to spend. Two failure modes bracket it:
 
 - **Too clinical** → it reads as a mortality report. Users bounce, or worse, spiral.
 - **Too playful** → it reads as a novelty. Nobody believes the number, and given it is derived from IARC monographs and *Lancet* meta-analyses, that disbelief is a design failure.
 
-The resolution: **make it feel alive rather than morbid.** The centrepiece is not a countdown or a gauge. It is an organism — something that breathes, holds its shape when you are consistent, and becomes agitated when you are not. It is your body, abstracted, rendered at 60fps.
+The resolution: **make it feel alive rather than morbid.** The centrepiece is not a countdown or a gauge. It is an organism — something that breathes, holds its shape when you are consistent, and becomes agitated when you are not.
 
-### 9.2 Principles
+Two constraints from this document bind the visual system and are restated in `UI_SPEC.md` as principles:
 
-1. **Nothing is decoration.** Every visual property — radius, hue, wobble amplitude, pulse rate, opacity — is bound to a data value. If it moves, it means something. This is what separates "unique" from "decorated," and it is the entire reason the design can be both distinctive and credible.
-2. **The number is the hero.** The Organism surrounds it, never competes with it.
-3. **Uncertainty is visible, not hidden.** Low-confidence values render with a soft edge. A confident number and an uncertain number must never look the same.
-4. **Absence ≠ zero.** Missing data renders as a gap in the ring — visibly hollow, never as a neutral segment.
-5. **Calm at rest.** Motion is slow and breath-like. Nothing flashes, nothing counts down, nothing is urgent.
+1. **Nothing is decoration.** Every visual property is bound to a data value. This is what lets the design be distinctive without undermining the credibility the methodology earns.
+2. **Uncertainty must be visible.** §5.4.3 requires ancestry-portability limits to be a first-class visual state, not a tooltip. `UI_SPEC.md` §9.6 implements this.
 
-### 9.3 Foundations
+### Delivery surface
 
-**Palette.** Near-black base. Four semantic hues, no more.
-
-```css
-:root {
-  /* Substrate */
-  --void:      #07090B;   /* page background                      */
-  --membrane:  #0E1216;   /* raised surfaces                      */
-  --hairline:  #1C2228;   /* 1px separators                       */
-
-  /* Semantic — the only colours that carry meaning */
-  --credit:    #38E1B0;   /* minutes gained — oxygenated, cool    */
-  --debit:     #FF5B49;   /* minutes lost — arterial, not alarm   */
-  --genome:    #A78BFA;   /* genetic layer — distinct from behaviour */
-  --neutral:   #E8A33D;   /* at-threshold, caution                */
-
-  /* Type */
-  --bone:      #E8E6E1;   /* primary text — warm off-white        */
-  --ash:       #8A9099;   /* secondary                            */
-  --dust:      #4A5158;   /* tertiary, disabled                   */
-}
-```
-
-`--debit` is deliberately an oxygenated arterial red rather than a warning red. The app subtracts minutes constantly; it must not look like an alarm going off all day.
-
-Light mode is a v2 concern. The Organism depends on emission against darkness.
-
-**Typography.**
-
-| Role | Face | Notes |
-|---|---|---|
-| The number | **Instrument Serif** | Large, editorial, human. The serif is the "unique" decision — every competitor uses a grotesque here. It makes the number feel *written down* rather than computed. |
-| Data / numerals | **Geist Mono** | Tabular figures, mandatory. Numbers must not shift horizontally as they tick. |
-| UI / body | **Geist** | Tight tracking at small sizes. |
-
-All three are freely licensed. `font-variant-numeric: tabular-nums` is non-negotiable on every changing value.
-
-**Motion.**
-
-- The pulse is the signature. Driven by `requestAnimationFrame` at the user's **live resting heart rate** from WHOOP — a 52 bpm athlete's app breathes visibly slower than a 74 bpm user's. This is the detail people will remember.
-- The pulse easing follows a cardiac waveform, not a sine: fast systolic rise (~12% of the cycle), slower diastolic fall, brief rest. A sine wave reads as a pulsing button; this reads as a heartbeat.
-- Scale amplitude ±1.5%. Anything larger becomes a distraction within thirty seconds.
-- `prefers-reduced-motion: reduce` → the Organism becomes static, all data encoded in geometry and colour alone. **The visualisation must be fully legible without any animation.**
-
-### 9.4 The Organism — component specification
-
-Four concentric layers, outermost to innermost. Hand-authored SVG, ~420×420 viewBox, animated via CSS transforms and rAF-driven attribute updates.
-
-```
-        ╭───────────────────────╮
-     ╭──╯    ◜◝◜◝◜◝◜◝◜◝◜◝    ╰──╮      ① CORONA — 24 hourly spines
-   ╭─╯   ◜                    ◝  ╰─╮
-  │    ╭───────────────────╮      │    ② BANDS — 4 factor arcs
-  │  ╭─╯                   ╰─╮    │
-  │ │        ╭───────╮        │   │
-  │ │      ╭─╯       ╰─╮      │   │    ③ CORE — baseline
-  │ │     │  +2h 14m   │      │   │
-  │ │     │   TODAY    │      │   │
-  │ │      ╰─╮       ╭─╯      │   │
-  │ │        ╰───────╯        │   │
-  │  ╰─╮                   ╭─╯    │
-  │    ╰───────────────────╯      │    ④ MEMBRANE — 7-day volatility
-   ╰─╮   ◟                    ◞  ╭─╯
-     ╰──╮    ◟◞◟◞◟◞◟◞◟◞◟◞    ╭──╯
-        ╰───────────────────────╯
-```
-
-**① Corona — 24 hourly spines**
-
-One spine per hour of the current day, clockwise from midnight at 12 o'clock.
-
-| Property | Bound to |
-|---|---|
-| Length outward | Net **credit** minutes in that hour |
-| Length inward | Net **debit** minutes in that hour |
-| Hue | `--credit` / `--debit` |
-| Opacity | Confidence of that hour's scoring |
-| Absent | Hours in the future, or with no data, render as a faint `--dust` tick — **visibly hollow** |
-
-Lengths are square-root scaled. A +170 minute workout must not produce a spine ten times longer than a −18 minute snack, or every other hour becomes unreadable.
-
-**② Bands — four factor arcs**
-
-A ring of four arcs: **Sleep · Movement · Intake · Recovery**. Arc sweep = share of today's total absolute magnitude; arc colour = net direction of that factor. Tappable — each opens its ledger slice.
-
-**③ Core — baseline**
-
-The still centre. Holds the number.
-
-- **Diameter** = baseline life expectancy relative to the population median for the user's age and sex. Above median → larger core. This is the only place genetics appears geometrically, and it does not move day to day.
-- **Rim** = a thin `--genome` ring, its thickness bound to genomic contribution to the baseline shift.
-- **Pulse** = live resting heart rate.
-- **Low-confidence PRS** → the rim renders as a soft gradient rather than a defined stroke. An uncertain score is literally blurry. This is principle 3 made physical.
-
-**④ Membrane — 7-day volatility**
-
-The outer boundary. A closed path displaced by simplex noise. **Noise amplitude is bound to the standard deviation of the last 7 daily net scores.**
-
-- Consistent week → a near-perfect, calm circle.
-- Erratic week → a visibly agitated, lumpy boundary.
-
-The membrane is the product's most important non-verbal message: **consistency is the goal.** A user can see at a glance whether their week held its shape, with no number and no text.
-
-**Composite states**
-
-| State | Rendering |
-|---|---|
-| No WHOOP connected | Corona all hollow; core present at population median; copy invites connection |
-| No genome | Core rim absent entirely, not greyed — the genome layer is visibly *missing*, not broken |
-| Net-negative day | Spines point predominantly inward; core unchanged. The organism does not shrink or wither — **the app must never visually punish the user's body** |
-| First 24h | Membrane perfectly circular (no variance data), corona filling in live |
-
-### 9.5 Delivery surface — the phone frame
-
-The web app renders inside a fixed **390 × 844** device frame, centred on a `--void` field.
-
-This is a design decision, not a limitation. The frame:
-- Forces one-column, thumb-reachable composition — the layout the product will eventually ship in.
-- Projects legibly in a demo room, where a full-width desktop layout would strand the Organism in whitespace.
-- Signals "this is a mobile product" without the cost of building one.
-
-Beside the frame on wide viewports: a quiet panel carrying the current attribution trace. On stage, that panel is what makes the number credible — every judge's first question is "where does that come from," and the answer is already on screen.
-
-Below 480px viewport width, the frame dissolves and the app renders full-bleed.
+Web application rendered inside a fixed 390 × 844 phone frame on a desktop browser. This is a scope decision (§2) with a visual consequence: one-column, thumb-reachable composition, legible when projected. Specified in `UI_SPEC.md` §6.
 
 ---
 
 ## 10. Screens
 
-### 10.1 Today — `/`
-The Organism, the number, and a compressed ledger strip. Nothing else. The number reads as `+2h 14m`, never as `134` — hours-and-minutes keeps it human at scale.
+> **Moved to [`UI_SPEC.md`](UI_SPEC.md) §10** for composition and appearance. Listed here only as the v1 surface inventory.
 
-### 10.2 Ledger — `/ledger`
-Reverse-chronological, timestamped, signed. Running balance in the right column. Every row taps through to its explain view. Typographically this is the most conventional screen in the app, deliberately: it is the receipt, and receipts should look like receipts.
+| Route | Purpose |
+|---|---|
+| `/` | Today — the centrepiece, the number, a compressed ledger strip |
+| `/ledger` | The receipt. Reverse-chronological, signed, with running balance |
+| `/genome` | Consent and upload; post-upload PRS bands, variant table, inferred ancestry |
+| `/explain/:id` | The attribution trace for a single event (§6), linking each multiplier to `METHODOLOGY.md` |
 
-### 10.3 Genome — `/genome`
-Pre-upload: the consent step and a plain-language account of what is extracted and what is discarded.
-Post-upload: PRS percentiles with **explicit confidence bands**, the single-variant table (§5.4.1) with per-variant "not assayed on your chip" states, and inferred ancestry with its portability caveat stated in the interface — not in a footnote.
-
-### 10.4 Explain — `/explain/:id`
-The attribution trace for a single event, rendered as a vertical waterfall:
-
-```
-Processed meat, 1 serving              −30 min
-  × salt-sensitive genotype (rs4961)   ×1.30
-  × CVD PRS, 88th percentile           ×1.25
-  × no exercise today                  ×1.08
-  × compounding clamp applied          ×2.50 → clamped
-  ─────────────────────────────────────────────
-                                       −75 min
-```
-
-Every multiplier links to its source in `METHODOLOGY.md`. This screen is the product's integrity, and it is the answer to "is this made up?" — the honest answer being "no, and here is the chain."
+`/explain/:id` is the product's integrity screen and is not cut under any circumstances (§12).
 
 ---
 
