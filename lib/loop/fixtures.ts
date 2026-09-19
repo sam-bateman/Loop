@@ -8,7 +8,7 @@
  *
  * Every rate quoted in SAMPLE_RATES comes from METHODOLOGY-WHOOP.md §2 as
  * implemented in lib/scoring.ts — NOT from DESIGN_SPEC.md §1's headline
- * figures, which are the undiscounted study numbers. See app/drafts/page.tsx.
+ * figures, which are the undiscounted study numbers. See app/uipreview/drafts/page.tsx.
  */
 
 // ─── Formatting ────────────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ export const SAMPLE_HOURS: number[] = Array.from({ length: 24 }, (_, h) =>
 /**
  * WHOOP reports a handful of readings per day, not an event every hour, so a
  * spec-faithful 24-spine corona is mostly ticks. That is the honest picture of
- * a WHOOP-only product and it is left honest here. See app/drafts/page.tsx,
+ * a WHOOP-only product and it is left honest here. See app/uipreview/drafts/page.tsx,
  * decision 3.
  */
 export const SAMPLE_ABSENT_FROM = 24;
@@ -415,7 +415,7 @@ export const ILLUSTRATIVE_FULL_HOURS: number[] = Array.from({ length: 24 }, (_, 
  * UI_SPEC §7 draws 24 hourly spines, which assumes roughly hourly events — the
  * shape of a food-logging product. WHOOP emits a handful of readings a day, so
  * an hourly corona on real data is three spines and twenty-one ticks (compare
- * the two rings on /drafts). Twenty-four days of daily nets fills the same ring
+ * the two rings on /uipreview/drafts). Twenty-four days of daily nets fills the same ring
  * with data the shipped engine genuinely produces, and it lines up with the
  * membrane, which is already a multi-day measure.
  *

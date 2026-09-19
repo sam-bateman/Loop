@@ -35,7 +35,7 @@ export default function LedgerRow({
   if (!showTrace || !date) return <div className="ledger-row">{body}</div>;
 
   return (
-    <Link className="ledger-row is-link" href={`/ui/explain/${factorId(date, entry.what)}`}>
+    <Link className="ledger-row is-link" href={`/uipreview/explain/${factorId(date, entry.what)}`}>
       {body}
     </Link>
   );

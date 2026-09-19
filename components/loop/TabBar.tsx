@@ -11,9 +11,9 @@ import { usePathname } from "next/navigation";
  * of labels, no icons, no filled pills, nothing that competes with the ring.
  */
 const TABS = [
-  { href: "/ui", label: "Today" },
-  { href: "/ui/ledger", label: "Ledger" },
-  { href: "/ui/genome", label: "Genome" },
+  { href: "/uipreview", label: "Today" },
+  { href: "/uipreview/ledger", label: "Ledger" },
+  { href: "/uipreview/genome", label: "Genome" },
 ];
 
 export default function TabBar() {
@@ -21,7 +21,7 @@ export default function TabBar() {
   return (
     <nav className="tabbar" aria-label="Sections">
       {TABS.map((t) => {
-        const active = t.href === "/ui" ? path === "/ui" : path.startsWith(t.href);
+        const active = t.href === "/uipreview" ? path === "/uipreview" : path.startsWith(t.href);
         return (
           <Link
             key={t.href}

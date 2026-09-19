@@ -44,7 +44,7 @@ const DECISIONS = [
   {
     n: 1,
     title: "The number is not set in Instrument Serif",
-    body: "UI_SPEC.md §5 names Instrument Serif for the hero number and calls it “the single most identity-defining choice in the system”. Drawn next to the actual wordmark it fights it: the logo is monoline, geometric and round-terminalled, and a high-contrast serif beside it reads as two brands sharing a page. These drafts use Quicksand, which shares the wordmark’s construction — uniform stroke, circular bowls, rounded caps — so the display face and the logo have the same skeleton. The cost is warmth: a rounded geometric pushes toward DESIGN_SPEC.md §9’s “too playful → reads as a novelty” failure mode, where the serif pushed toward “too clinical”. Outfit is the same swap without the rounding if this reads too soft. One line in app/drafts/layout.tsx either way.",
+    body: "UI_SPEC.md §5 names Instrument Serif for the hero number and calls it “the single most identity-defining choice in the system”. Drawn next to the actual wordmark it fights it: the logo is monoline, geometric and round-terminalled, and a high-contrast serif beside it reads as two brands sharing a page. These drafts use Quicksand, which shares the wordmark’s construction — uniform stroke, circular bowls, rounded caps — so the display face and the logo have the same skeleton. The cost is warmth: a rounded geometric pushes toward DESIGN_SPEC.md §9’s “too playful → reads as a novelty” failure mode, where the serif pushed toward “too clinical”. Outfit is the same swap without the rounding if this reads too soft. One line in app/uipreview/layout.tsx either way.",
   },
   {
     n: 2,
@@ -112,7 +112,7 @@ export default function DraftsIndex() {
 
         <section className="i-grid">
           {DRAFTS.map((d) => (
-            <Link key={d.slug} href={`/drafts/${d.slug}`} className="card i-card">
+            <Link key={d.slug} href={`/uipreview/drafts/${d.slug}`} className="card i-card">
               <div className="i-card-head">
                 <span className="label">Draft {d.slug.toUpperCase()}</span>
                 <span className="micro">Open →</span>
@@ -190,10 +190,10 @@ export default function DraftsIndex() {
 
         <footer className="i-foot">
           <span className="micro" style={{ textTransform: "none" }}>
-            Drafts are noindex and live under /drafts. The shipped landing page at{" "}
+            Drafts are noindex and live under /uipreview/drafts. The shipped landing page at{" "}
             <span className="mono">app/page.tsx</span> is untouched — promoting one means
             moving its body into that file and lifting the tokens from{" "}
-            <span className="mono">app/drafts/loop.css</span> into{" "}
+            <span className="mono">app/loop-ui.css</span> into{" "}
             <span className="mono">app/globals.css</span>.
           </span>
         </footer>

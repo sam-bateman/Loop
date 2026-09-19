@@ -34,7 +34,7 @@ export default function Switcher({ current }: { current: string }) {
         return (
           <Link
             key={d.slug}
-            href={`/drafts/${d.slug}`}
+            href={`/uipreview/drafts/${d.slug}`}
             className="label"
             style={{
               padding: "8px 14px",

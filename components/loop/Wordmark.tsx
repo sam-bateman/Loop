@@ -3,7 +3,7 @@ import Image from "next/image";
 /**
  * public/brand/loop-wordmark.png — the one asset public/brand/README.md marks
  * as not-disposable. Used as supplied; its green is #40F830, which is NOT the
- * --credit teal. See the note on app/drafts/page.tsx.
+ * --credit teal. See the note on app/uipreview/drafts/page.tsx.
  */
 export default function Wordmark({
   width = 88,
